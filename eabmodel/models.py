@@ -1,29 +1,24 @@
 from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
+
 # Create your models here.
-
-#
-# class Admin(models.Model):
-#     pass
-#
-
-
-class Evaluator(models.Model):
-    pass
 
 
 class Course(models.Model):
-
     code = models.CharField(max_length=7)
     name = models.CharField(max_length=255)
-    section = models.PositiveSmallIntegerField()
-    year = models.PositiveSmallIntegerField()
-    SEMESTER_CHOICES = (
-        ('O', 'Otoño'),
-        ('P', 'Primavera'),
-        ('V', 'Verano'),
-    )
+    section = models.PositiveSmallIntegerField(default=1)
 
-    semester = models.CharField(max_length=1, choices=SEMESTER_CHOICES)
+    year = models.PositiveSmallIntegerField(default=2019)
+    SEMESTER_CHOICES = (
+        ('Otoño', 'Otoño'),
+        ('Primavera', 'Primavera'),
+        ('Verano', 'Verano'),
+    )
+    semester = models.CharField(max_length=9, choices=SEMESTER_CHOICES, default='Otoño')
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         unique_together = ["code", "section", "year", "semester"]

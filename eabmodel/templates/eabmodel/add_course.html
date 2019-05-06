@@ -1,0 +1,8 @@
+{% load static %}
+
+<form action="{% url 'main:add_course' %}" method='post'>
+  {% csrf_token %}
+  {{ form }}
+{#            <button name='submit'>Submit</button>#}
+  <input type='submit' name='next' value="Submit" />
+</form>

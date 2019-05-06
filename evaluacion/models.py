@@ -1,6 +1,7 @@
 from django.db import models
 
-from eabmodel.models import Student, Course, Team, Evaluator
+from eabmodel.models import Student, Course, Team
+from users.models import EvaluatorUser
 from rubrica.models import Rubric
 
 # Create your models here.
@@ -18,7 +19,7 @@ class Evaluation(models.Model):
     rubric = models.ForeignKey(Rubric, on_delete = models.PROTECT)
     presentation_time = models.TimeField()
 
-    evaluators = models.ManyToManyField(Evaluator)
+    evaluators = models.ManyToManyField(EvaluatorUser)
     is_active = models.BooleanField(default=False)
 
     class Meta:
@@ -41,7 +42,7 @@ class TeamEvaluationGrade(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     team_evaluation = models.ForeignKey(TeamEvaluation, on_delete=models.CASCADE)
-    evaluator = models.ForeignKey(Evaluator, on_delete=models.PROTECT)
+    evaluator = models.ForeignKey(EvaluatorUser, on_delete=models.PROTECT)
     grade_detail = models.TextField()
     final_grade = models.FloatField()
     comment = models.TextField()
