@@ -26,7 +26,7 @@ SECRET_KEY = '0tadwe=i1c!=jc!+ppft=gm5ujk*yn^fdn$%-bymhgumf3$z47'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-ADMIN_ENABLED = False
+ADMIN_ENABLED = True
 
 # Application definition
 
@@ -57,9 +57,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
-    # Local
-    #'users.apps.UsersConfig',
 ]
 
 ROOT_URLCONF = 'tarea4.urls'
@@ -133,8 +130,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
+    # os.path.join(BASE_DIR, "static"),
 ]
+
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 LOGIN_REDIRECT_URL = '/'

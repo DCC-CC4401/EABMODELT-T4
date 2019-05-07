@@ -1,8 +1,31 @@
+{% load static %}
 <html>
 
-<body>
-{% block content %}
-{% endblock %}
+<head>
+
+
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static "registration/login.css" %}">
+  <link rel="stylesheet" type="text/css" href="https://www.w3schools.com/w3css/4/w3.css">
+  {% block extrastyle %}
+  {% endblock %}
+</head>
+
+{#<body class="{% block bodyclass %}{% endblock %}">#}
+<body class="login">
+  <div id="container">
+    <div id="header">
+      {% block header %}
+          <h1> <a href="{% url 'main:landing_page' %}">Sistema de Evaluación </a></h1>
+      {% endblock %}
+    </div>
+
+    <div id="content">
+      {% block content %}
+      {% endblock %}
+    </div>
+
+  </div>
 
 </body>
 
