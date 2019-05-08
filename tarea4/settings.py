@@ -43,6 +43,9 @@ INSTALLED_APPS = [
     'evaluacion.apps.EvaluacionConfig',
     'rubrica.apps.RubricaConfig',
     'users.apps.UsersConfig',
+
+    # extra apps
+    'widget_tweaks',
 ]
 
 if ADMIN_ENABLED is True:

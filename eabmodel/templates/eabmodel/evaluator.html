@@ -1,0 +1,149 @@
+{% extends 'eabmodel/base.html' %}
+{% load widget_tweaks %}
+
+{% block head %}
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+  <style>
+    table {
+    border-collapse: collapse;
+    }
+
+    table, th, td {
+      border: 1px solid black;
+      text-align: left;
+      padding: 3px;
+    }
+
+    #eliminar-msg {
+      padding: 50px 0 50px 0;
+    }
+  </style>
+{% endblock %}
+
+
+
+{% block content %}
+  <!-- !PAGE CONTENT! -->
+  <div class="w3-main" style="margin-left:340px;margin-right:40px">
+
+  <!-- Portada -->
+  <div class="w3-container" id="portada" style="margin-top:80px; margin-bottom:10px">
+    <h1 class="w3-xxxlarge w3-text-red"><b>Evaluadores</b></h1>
+    <hr style="width:50px;border:5px solid red" class="w3-round">
+    <p><h3>Seleccione un evaluador</h3></p></h2>
+  </div>
+
+
+  <!-- Caja de Evaluadores -->
+  <div class="w3-row-padding w3-center w3-margin-top">
+
+
+    <!--Caja de agregar-->
+    <div class="w3-quarter w3-margin-top">
+      <button onclick="document.getElementById('agregar').style.display='block'" class="w3-card w3-container w3-light-gray w3-hover-shadow" style="min-height: 317px; max-width: 300px">
+      <h3>Agregar evaluador nuevo</h3><br>
+      <i class="fas fa-user-plus" style="font-size:80px;text-align: center; padding: 10px"></i>
+      </button>
+    </div>
+
+    <!-- Cajas de cursos -->
+
+    {%  for evaluator in evaluator_list %}
+      <div id="{{ evaluator.id }}"  class="w3-quarter w3-margin-top">
+          <button class="w3-card w3-container w3-hover-shadow w3-light-gray" style="max-height:380px;min-height: 317px; width:200px">
+          <h3><span id="{{ evaluator.id }}-firstname"> {{ evaluator.first_name }} </span>
+          <span id="{{ evaluator.id }}-lastname"> {{ evaluator.last_name}}</span> </h3>
+          <i class="fas fa-user-alt" style="font-size:100px"></i>
+          <p> <span id="{{ evaluator.id }}-email">{{ evaluator.email}} </span> </p>
+          <button class="w3-btn w3-red">Modificar</button>
+          <button class="w3-btn w3-red" onclick="removeEvaluatorConfirmation(event)"> Eliminar </button>
+        </button>
+      </div>
+
+    {% endfor %}
+
+
+    <!--Agregar -->
+    <div id="agregar" class="w3-modal" {% if form_msg %} style="display:block !important" {% endif %}>
+      <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:600px">
+        <div class="w3-center">
+          <span onclick="document.getElementById('agregar').style.display='none'" class="w3-button w3-xlarge w3-transparent w3-display-topright" title="Close Modal">×</span>
+          <br>
+          {% if password %} <h3> {{ password }} </h3> {% endif %}
+            <form class="w3-container" action="{% url 'main:add_eval' %}" method='post'>
+              {% csrf_token %}
+                <div class="w3-section">
+                  {{ form.non_field_errors }}
+                  {{ form.first_name.errors }}
+                  <label for="{{ form.first_name.id_for_label }}"><b>Nombre:</b></label>
+                  {% render_field form.first_name class+="w3-input w3-border w3-margin-bottom" placeholder=form.first_name.label %}
+
+
+                  {{ form.last_name.errors }}
+                  <label for="{{ form.last_name.id_for_label }}"><b>Apellido:</b></label>
+                  {% render_field form.last_name class+="w3-input w3-border w3-margin-bottom" placeholder=form.last_name.label %}
+
+                  {{ form.email.errors }}
+                  <label for="{{ form.email.id_for_label }}"><b>Email:</b></label>
+                  {% render_field form.email class+="w3-input w3-border w3-margin-bottom" placeholder=form.email.label %}
+                  <input class="w3-button w3-red" style="margin-bottom: 40px" type='submit' name='next' value="Agregar Evaluador" />
+                </div>
+            </form>
+        </div>
+      </div>
+    </div><!-- cierra de agregar -->
+
+    <div id="eliminar" class="w3-modal">
+      <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:600px; min-height: 400px">
+        <div id="eliminar-msg" class="w3-center">
+          <span onclick="document.getElementById('eliminar').style.display='none'" class="w3-button w3-xlarge w3-transparent w3-display-topright" title="Close Modal">×</span>
+            <h5 id="eliminar-text"></h5>
+            <table style="margin:auto">
+              <tr>
+                <td>Nombre:</td>
+                <td><span id="eliminar-text-firstname"></span></td>
+              </tr>
+              <tr>
+                <td>Apellido:</td>
+                <td><span id="eliminar-text-lastname"></span></td>
+              </tr>
+              <tr>
+                <td>Email:</td>
+                <td><span id="eliminar-text-email"></span></td>
+              </tr>
+            </table>
+            <form class="w3-container" action="{% url 'main:remove_eval' %}" method='post'>
+                {% csrf_token %}
+                <label for="id_id" type="hidden"></label>
+                <input type="hidden" id="id_id" name="id" value="0">
+
+            <input class="w3-button w3-red" style="margin:20px auto 0 auto" type='submit' name='next' value="Eliminar" />
+            </form>
+        </div>
+      </div>
+    </div> <!-- cierre de eliminar curso -->
+
+  </div><!--cierre de cajas de cursos-->
+  </div>
+
+{% endblock %}
+
+
+{% block footer %}
+
+  <script>
+    function removeEvaluatorConfirmation(e){
+      let id = e.target.parentNode.id;
+      $('#id_id').val(id);
+      $('#eliminar-text-firstname').text($('#'+id+'-firstname').text());
+      $('#eliminar-text-lastname').text($('#'+id+'-lastname').text());
+      $('#eliminar-text-email').text($('#'+id+'-email').text());
+      $('#eliminar-text').text( "Seguro deseas eliminar el siguiente evaluador ?");
+      $('#eliminar').attr('style', 'display: block');
+
+    }
+
+
+  </script>
+
+{% endblock %}

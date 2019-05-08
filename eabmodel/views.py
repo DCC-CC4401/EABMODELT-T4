@@ -93,9 +93,10 @@ def add_eval(request):
     if not request.user.is_admin:
         return HttpResponseNotFound('Sorry')
 
+
+    extra_context = {}
     if request.method != 'POST':
         form = EvaluatorUserCreationForm()
-
     else:
         form = EvaluatorUserCreationForm(request.POST)
         if form.is_valid():
@@ -104,7 +105,9 @@ def add_eval(request):
             evaluator.set_password(password)
             evaluator.save()
 
-    extra_context = {'form': form, 'form_msg': True, 'password': password}
+            extra_context.update({'password': password})
+
+    extra_context.update({'form': form, 'form_msg': True})
     response = evaluators(request, extra_context)
     return response
 

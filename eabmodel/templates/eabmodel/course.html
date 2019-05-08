@@ -1,4 +1,5 @@
 {% extends 'eabmodel/base.html' %}
+{% load widget_tweaks %}
 {% block head %}
  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
   <style>
@@ -69,25 +70,35 @@
               {% csrf_token %}
 {#              {{ form.as_ul }}#}
               <div class="w3-section">
+
                 {{ form.non_field_errors }}
                 {{ form.name.errors }}
-                <label for="{{ form.name.id_for_label }}">Nombre Curso:</label>
-                {{ form.name }}
+                <label for="{{ form.name.id_for_label }}"><b>Nombre Curso:</b></label>
+                {% render_field form.name class+="w3-input w3-border w3-margin-bottom" placeholder=form.name.label %}
+                {#                {{ form.name }}#}
+
                 {{ form.code.errors }}
-                <label for="{{ form.code.id_for_label }}">Código:</label>
-                {{ form.code }}
+                <label for="{{ form.code.id_for_label }}"><b>Código:</b></label>
+{#                {{ form.code }}#}
+                {% render_field form.code class+="w3-input w3-border w3-margin-bottom" placeholder=form.code.label %}
                 {{ form.section.errors }}
-                <label for="{{ form.section.id_for_label }}"> - </label>
-                {{ form.section}}
-                  <br>
+
+                <label for="{{ form.section.id_for_label }}"><b> Sección </b></label>
+{#                {{ form.section}}#}
+                  {% render_field form.section class+="w3-input w3-border w3-margin-bottom" placeholder=form.section.label %}
+
                 {{ form.year.errors }}
-                <label for="{{ form.year.id_for_label }}">Año</label>
-                {{ form.year}}
+                <label for="{{ form.year.id_for_label }}"><b>Año</b></label>
+{#                {{ form.year}}#}
+                  {% render_field form.year class+="w3-input w3-border w3-margin-bottom"%}
+
                 {{ form.semester.errors }}
-                <label for="{{ form.semester.id_for_label }}">Semestre</label>
-                {{ form.semester}}
+                <label for="{{ form.semester.id_for_label }}"><b>Semestre</b></label>
+{#                {{ form.semester}}#}
+                  {% render_field form.semester class+="w3-input w3-border w3-margin-bottom"  %}
+
               </div>
-              <input class="w3-button w3-red" style="margin-bottom: 40px" type='submit' name='next' value="Añadir Curso +" />
+              <input class="w3-button w3-block w3-red w3-section w3-padding"  type='submit' name='next' value="Añadir Curso +" />
             </form>
         </div>
       </div>
