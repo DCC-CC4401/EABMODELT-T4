@@ -16,7 +16,7 @@
     <h1 class="w3-xxxlarge w3-text-red"><b>Evaluación <i class="w3-text-green">en curso</i> </b></h1>
     <hr style="width:50px;border:5px solid red" class="w3-round">
     <div class="w3-container w3-center">
-    <p><b>Lambda-Ideas</b> Presentación Tarea 2 <i>CC4401-1/Otoño/2019</i></p>
+    <p><b>{{ team }}</b> Presentación {{ stage }} <i>CC4401-1/Otoño/2019</i></p>
     <br>
     
     <div class="w3-panel  w3-margin-bottom">
@@ -36,17 +36,26 @@
         <div class="w3-half w3-margin-bottom ">
           <ul class="w3-ul w3-light-grey w3-center w3-card-4">
             <li class="w3-dark-grey w3-xlarge w3-padding-32">Miembros del equipo <i class="fas fa-user-friends"></i></li>
-            <li class="presentado w3-padding-16">Pablo Aliaga <i class="far fa-check-circle"></i> <i class="w3-small">ya presentó</i></li>
-            <li class="w3-padding-16">Bastián Matamala</li>
-            <li class="presentado w3-padding-16">Camila Quilape <i class="far fa-check-circle"></i><i class="w3-small">ya presentó</i></li>
-            <li class=" w3-padding-16">Andrea Park</li>
+
+              {% for student in group %}
+                  {% if student.1 %}
+                    <li class="presentado w3-padding-16">{{ student.0 }} <i class="far fa-check-circle"></i> <i class="w3-small">ya presentó</i></li>
+                  {% else %}
+                    <li class="w3-padding-16">{{ student.0 }} <button class="fas fa-plus" onclick="return addPresenter('{{ student.0 }}')"></button></li>
+                  {% endif %}
+              {% endfor %}
+
           </ul>
         </div>
             
         <div class="w3-half w3-margin-bottom ">
           <ul class="w3-ul w3-light-grey w3-center w3-card-4">
             <li class="w3-dark-grey w3-xlarge w3-padding-32">Miembros que presentan <i class="fas fa-chalkboard-teacher"></i></li>
-            <li class="w3-padding-16">Andrea Park <i style="margin-left: 10px" class="w3-large fas fa-times"></i></li>
+
+              {% for student in group %}
+                <li class="w3-padding-16" style="display: none" id="{{ student.0 }}pres">{{ student.0 }} <button style="margin-left: 10px" class="w3-large fas fa-times" onclick="return notShow('{{ student.0 }}')"> </button> </li>
+              {% endfor %}
+
             <li class=" opcion w3-padding-16" id="mas"> Agregar otro <i style="margin-left: 10px"  class="fas fa-user-plus"></i></li>
             
           </ul>
@@ -232,5 +241,25 @@
 <div class="w3-light-grey w3-container w3-padding-32" style="margin-top:75px;padding-right:58px"><p class="w3-right">Powered by <a href="https://www.w3schools.com/w3css/default.asp" title="W3.CSS" target="_blank" class="w3-hover-opacity">w3.css</a></p></div>
 
 </body>
+
+    <script>
+    var presenters = [];
+    function addPresenter(name){
+        var idSt = name + "pres";
+        var student = document.getElementById(idSt);
+        student.style.display = "block";
+        if(! presenters.includes(name)){
+            presenters.push(name);
+        }
+    }
+    function notShow(name){
+        var idSt = name + "pres";
+        var student = document.getElementById(idSt);
+        student.style.display = "none";
+        presenters = presenters.filter(function(ele){
+            return name.localeCompare(ele);
+        });
+    }
+    </script>
 
 {% endblock content %}

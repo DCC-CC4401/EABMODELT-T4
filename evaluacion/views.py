@@ -1,4 +1,5 @@
 from django.shortcuts import render, HttpResponse
+from eabmodel.models import *
 
 # Create your views here.
 
@@ -9,7 +10,15 @@ def openEval(request):
     return render(request, 'evaluacion/evaluacion.html', context={"completed": False})
 
 def openEvalAdmin(request):
-    return render(request, 'evaluacion/evaluacionadmin.html', context={"completed": False})
+    #presenting_group = StudentAtTeam.objects.get(team="eabmodel", active=True)
+    return render(request, 'evaluacion/evaluacionadmin.html', context={"completed": False,
+                                                                       "group": [["Valentina Pinto", False],
+                                                                                 ["José Miguel Cordero", False],
+                                                                                 ["José Astorga", False],
+                                                                                 ["Juan Saez", True],
+                                                                                 ["Tomás Estévez Lenz", True]],
+                                                                       "team": "EABMODEL Team",
+                                                                       "stage": "Tarea 4"})
 
 def postEval(request):
     return render(request, 'evaluacion/postevaluacion.html', context={"completed": False})
