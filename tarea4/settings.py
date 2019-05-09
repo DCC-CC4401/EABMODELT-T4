@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'eabmodel.apps.EabmodelConfig',
     'evaluacion.apps.EvaluacionConfig',
     'rubrica.apps.RubricaConfig',
+    'contact.apps.ContactConfig',
 ]
 
 MIDDLEWARE = [
