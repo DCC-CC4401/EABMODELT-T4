@@ -7,8 +7,12 @@ def index(request):
     return render(request, 'evaluacion/index.html', context={})
 
 def openEval(request):
-    return render(request, 'evaluacion/evaluacion.html', context={"completed": False})
+    return render(request, 'evaluacion/evaluacion.html', context={"completed": False,
+                                                                  "team": "EABMODEL Team",
+                                                                  "stage": "Tarea 4",
+                                                                  "curso": "CC4401-1"})
 
+#@login_required
 def openEvalAdmin(request):
     #presenting_group = StudentAtTeam.objects.get(team="eabmodel", active=True)
     return render(request, 'evaluacion/evaluacionadmin.html', context={"completed": False,
