@@ -5,6 +5,10 @@
 {% block content %}
 
 <body>
+<link rel="stylesheet" type="text/css" href="./evaluacion.css">
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
 <!-- !PAGE CONTENT! -->
 <div class="w3-main" style="margin-left:340px;margin-right:40px">
@@ -63,159 +67,153 @@
       </div>
 
     <p>Seleccione el nivel de logro alcanzado por el grupo en cada ámbito</p> </div>
-    
-    <div class="w3-panel  w3-margin-bottom">
+
+    <div id="option1" class="w3-panel w3-margin-bottom">
       <ul class="w3-ul w3-light-grey w3-center w3-card-4">
-        <li class="w3-red w3-xlarge w3-padding-32">Contenidos <i class="far fa-check-circle"></i></li>
-        <li class="opcion w3-padding-16"> No incluye las interfaces
+        <li class="w3-red w3-xlarge w3-padding-32">Contenidos<i class="far fa-check-circle"></i></li>
+        <button class="opcion w3-padding-16" style="width:100%" onclick="buttonClick(1)"> No incluye las interfaces
             solicitadas
-          </li>
-        <li class="opcion w3-padding-16 selected"> Faltan la mayoria de las
+          </button>
+        <button class="opcion w3-padding-16" style="width:100%" onclick="buttonClick(1)"> Faltan la mayoria de las
             interfaces
-           </li>
-        <li class="opcion w3-padding-16"> Solo faltan 1 o 2 interfaces </li>
-        <li class="opcion w3-padding-16"> Incluye todas las interfaces
+           </button>
+        <button class="opcion w3-padding-16" style="width:100%" onclick="buttonClick(1)"> Solo faltan 1 o 2 interfaces </button>
+        <button class="opcion w3-padding-16" style="width:100%" onclick="buttonClick(1)"> Incluye todas las interfaces
             solicitadas
-           </li>
+           </button>
       </ul>
     </div>
-        
-    
-    
-          
-      <div class="w3-panel w3-margin-bottom">
+
+      <div id="option2" class="w3-panel w3-margin-bottom">
         <ul class="w3-ul w3-light-grey w3-center w3-card-4">
-          <li class="w3-orange w3-xlarge w3-padding-32">Calidad del material
-              <i class="fas fa-exclamation-circle"></i><i class="w3-medium"> falta seleccionar</i></li> 
-          <li class="opcion w3-padding-16">Presentación con muchos
+          <li class="w3-red w3-xlarge w3-padding-32">Calidad del Material<i class="far fa-check-circle"></i></li>
+          <button class="opcion w3-padding-16" style="width:100%" onclick="buttonClick(2)">Presentación con muchos
               errores ortográficos, todas
               las imágenes son de baja
               resolución
-              </li>
-          <li class="opcion w3-padding-16">Algunos errores
+              </button>
+          <button class="opcion w3-padding-16" style="width:100%" onclick="buttonClick(2)">Algunos errores
               ortográficos, casi todas las
               imágenes son de baja
               resolución
-              </li>
-          <li class="opcion w3-padding-16">Pocos errores ortográficos,solo algunas imágenes sonde baja resolución
-            </li>
-          <li class="opcion w3-padding-16">Pocos errores ortográficos,
+          </button>
+          <button class="opcion w3-padding-16" style="width:100%" onclick="buttonClick(2)">Pocos errores ortográficos,solo algunas imágenes sonde baja resolución
+            </button>
+          <button class="opcion w3-padding-16" style="width:100%" onclick="buttonClick(2)">Pocos errores ortográficos,
               todas las imágenes son de
               buena resolución
-              </li>
+              </button>
         </ul>
       </div>
 
-      <div class="w3-panel w3-margin-bottom">
+      <div id ="option3" class="w3-panel w3-margin-bottom">
         <ul class="w3-ul w3-light-grey w3-center w3-card-4">
-          <li class="w3-red w3-xlarge w3-padding-32">Relación con requisitos
-              funcionales <i class="far fa-check-circle"></i>
+          <li class="w3-red w3-xlarge w3-padding-32">Relación con requisitos funcionales<i class="far fa-check-circle"></i>
               
             </li>
-          <li class="opcion w3-padding-16">Solo describe las
+          <button class="opcion w3-padding-16" style="width:100%" onclick="buttonClick(3)">Solo describe las
               interfaces, sin mencionar
               requisito alguno
               
-              </li>
-          <li class="opcion w3-padding-16">Solo para algunas de las
+              </button>
+          <button class="opcion w3-padding-16" style="width:100%" onclick="buttonClick(3)">Solo para algunas de las
               interfaces explica cómo
               satisfacen los requisitos
               funcionales
               
-              </li>
-          <li class="opcion w3-padding-16 selected">Para casi todas las
+              </button>
+          <button class="opcion w3-padding-16" style="width:100%" onclick="buttonClick(3)">Para casi todas las
               interfaces, explica cómo
               satisfacen los requisitos
               funcionales
-              </li>
-          <li class="opcion w3-padding-16">Explica claramente como
+              </button>
+          <button class="opcion w3-padding-16" style="width:100%" onclick="buttonClick(3)">Explica claramente como
               cada interfaz satisface los
               requisitos funcionales
               
-              </li>
+              </button>
         </ul>
       </div>
 
-      <div class="w3-panel w3-margin-bottom">
+      <div id="option4" class="w3-panel w3-margin-bottom">
           <ul class="w3-ul w3-light-grey w3-center w3-card-4">
-            <li class="w3-red w3-xlarge w3-padding-32">Organización de la
-                información <i class="far fa-check-circle"></i>
+            <li class="w3-red w3-xlarge w3-padding-32">Organización de la información<i class="far fa-check-circle"></i>
                 
               </li>
-            <li class="opcion w3-padding-16">No se entiende la
+            <button class="opcion w3-padding-16" style="width:100%" onclick="buttonClick(4)">No se entiende la
                 presentación porque no haysecuencia lógica de
                 información               
-                </li>
-            <li class="opcion w3-padding-16">Es difícil seguir la
+                </button>
+            <button class="opcion w3-padding-16" style="width:100%" onclick="buttonClick(4)">Es difícil seguir la
                 presentación, porque el
                 presentador “salta” entre
                 diapositivas
                 
-                </li>
-            <li class="opcion w3-padding-16">La información está
+                </button>
+            <button class="opcion w3-padding-16" style="width:100%" onclick="buttonClick(4)">La información está
                 presentada en una
                 secuencia lógica
                 
-                </li>
-            <li class="opcion w3-padding-16 selected">La información es
+                </button>
+            <button class="opcion w3-padding-16" style="width:100%" onclick="buttonClick(4)">La información es
                 presentada en una forma
                 lógica e interesante                
                 
-                </li>
+                </button>
           </ul>
         </div>
 
-        <div class="w3-panel w3-margin-bottom">
+        <div id="option5" class="w3-panel w3-margin-bottom">
             <ul class="w3-ul w3-light-grey w3-center w3-card-4">
-              <li class="w3-red w3-xlarge w3-padding-32">Forma <i class="far fa-check-circle"></i>
+              <li class="w3-red w3-xlarge w3-padding-32">Forma<i class="far fa-check-circle"></i>
                   
                 </li>
-              <li class="opcion w3-padding-16">No se entiende lo que dice(en términos fonéticos y
+              <button class="opcion w3-padding-16" style="width:100%" onclick="buttonClick(5)">No se entiende lo que dice(en términos fonéticos y
                   cinéticos)
                      
-                  </li>
-              <li class="opcion w3-padding-16">Se entiende lo que dice la
+                  </button>
+              <button class="opcion w3-padding-16" style="width:100%" onclick="buttonClick(5)">Se entiende lo que dice la
                   de manera parcial (su
                   cuerpo no acompaña sus
                   palabras)
                   
-                  </li>
-              <li class="opcion w3-padding-16 selected">Se da a entender,
+                  </button>
+              <button class="opcion w3-padding-16" style="width:100%" onclick="buttonClick(5)">Se da a entender,
                   presentando de manera
                   eficiente y adecuado
                   lenguaje corporal
                   
-                  </li>
-              <li class="opcion w3-padding-16">Se da a entender siempre,
+                  </button>
+              <button class="opcion w3-padding-16" style="width:100%" onclick="buttonClick(5)">Se da a entender siempre,
                   destacando en su forma
                   (pausas, dicción, contacto
                   visual, gesticulación, otros)
                   
-                  </li>
+                  </button>
             </ul>
           </div>
 
-          <div class="w3-panel w3-margin-bottom">
+          <div id="option6" class="w3-panel w3-margin-bottom">
               <ul class="w3-ul w3-light-grey w3-center w3-card-4">
-                <li class="w3-red w3-xlarge w3-padding-32">Entusiasmo <i class="far fa-check-circle"></i>
+                <li class="w3-red w3-xlarge w3-padding-32">Entusiasmo<i class="far fa-check-circle"></i>
                     
                   </li>
-                <li class="opcion w3-padding-16">No muestra interés en su
+                <button class="opcion w3-padding-16" style="width:100%" onclick="buttonClick(6)">No muestra interés en su
                     entrega
                     
-                    </li>
-                <li class="opcion w3-padding-16">Se muestra algo negativo
+                    </button>
+                <button class="opcion w3-padding-16" style="width:100%" onclick="buttonClick(6)">Se muestra algo negativo
                     acerca de su entrega
                     
-                    </li>
-                <li class="opcion w3-padding-16 selected">Ocasionalmente habla en
+                    </button>
+                <button class="opcion w3-padding-16" style="width:100%" onclick="buttonClick(6)">Ocasionalmente habla en
                     forma positiva
                   
-                    </li>
-                <li class="opcion w3-padding-16">Habla en forma positiva
+                    </button>
+                <button class="opcion w3-padding-16" style="width:100%" onclick="buttonClick(6)">Habla en forma positiva
                     durante casi toda la
                     presentación                    
-                    </li>
+                    </button>
               </ul>
             </div>
 
@@ -225,7 +223,7 @@
             </div>
 
             <div class="w3-panel w3-right w3-half">
-                <button class="w3-button w3-xlarge w3-red" style="margin-left: 15%"> <i class="fas fa-envelope-open-text"></i> Entregar evaluación</button>
+                <button class="w3-button w3-xlarge w3-red" style="margin-left: 15%" onclick="validate(6)"> <i class="fas fa-envelope-open-text"></i> Entregar evaluación</button>
             </div>
   </div>
   
@@ -260,6 +258,67 @@
             return name.localeCompare(ele);
         });
     }
+
+    function submitButtonStyle(_this) {
+      _this.style.backgroundColor = "red";
+    }
+
+    var selectedOptions = [];
+    function buttonClick(param){
+        var text = "#option" + param.toString() + " :button";
+        $(text).click(function(){
+            $(text).css("background-color","#DDDDDD");
+            $(this).css("background-color","#31BE00");
+            addToSelec(param,$(this).text());
+        })
+    }
+
+    function addToSelec(par,text){
+        var i = 0;
+        for(i; i < selectedOptions.length; i++){
+            if(selectedOptions[i][0] === par){
+                selectedOptions[i][1] = text;
+                return;
+            }
+        }
+        selectedOptions.push([par,text]);
+    }
+
+    function validate(num){
+        var ready = [];
+        var notReady =[];
+        var j = 0;
+        for(j; j < selectedOptions.length; j++){
+            ready.push(selectedOptions[j][0]);
+        }
+        for(j=1; j <= num; j++){
+            if(!ready.includes(j)){
+                notReady.push(j);
+            }
+        }
+        var alertOf = [];
+        for(j=0; j < notReady.length; j++){
+            var search = "#option" + notReady[j].toString();
+            var modify = $(search).find("li");
+            modify.removeClass("w3-red");
+            modify.addClass("w3-orange");
+            var text = modify.contents().filter(function(){
+              return this.nodeType == 3;
+            })[0].nodeValue;
+            alertOf.push(text);
+            modify.html(text + '<i class="fas fa-exclamation-circle"></i><i class="w3-medium"> falta seleccionar</i>');
+        }
+        var toShow = "";
+        for(j=0; j < alertOf.length; j++){
+            toShow = toShow + alertOf[j] + ", ";
+        }
+        var toShow2 = toShow.slice(0, toShow.length-2);
+        alert("No haz completado los campos: " + toShow2);
+    }
+    /*$("#firstOption :button").click(function(){
+        $(this).append("selfie");
+    });*/
+
     </script>
 
 {% endblock content %}
