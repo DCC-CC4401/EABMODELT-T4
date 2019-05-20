@@ -4,286 +4,339 @@
 
 {% block head %}
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js"> </script>
-    <script type="text/javascript">
-        $(function () {
-            $("td").dblclick(function () {
-                var OriginalContent = $(this).text();
-
-                $(this).addClass("cellEditing");
-                $(this).html("<input type='text' value='" + OriginalContent + "' />");
-                $(this).children().first().focus();
-
-                $(this).children().first().keypress(function (e) {
-                    if (e.which == 13) {
-                        var newContent = $(this).val();
-                        $(this).parent().text(newContent);
-                        $(this).parent().removeClass("cellEditing");
-                    }
-                });
-
-            $(this).children().first().blur(function(){
-                $(this).parent().text(OriginalContent);
-                $(this).parent().removeClass("cellEditing");
-            });
-            });
-        });
-    </script>
     <script>
-        function submitRubric() {
-            var formData = JSON.stringify($("#rubric-form").serializeArray());
+        function submitform() {
+            var rubric = {};
+            rubric.name = document.getElementById("rubric-title").value;
+            rubric.suggested_presentation_time = Date.now();
+            rubric.completed = true;
 
+            var json_table = [];
+            var table = document.getElementById("rubric-table");
+
+            for(var i=0; i<table.rows.length; i++) {
+                var row = {};
+                for(var j=0; j<table.rows[i].cells.length; j++) {
+                    //row[document.getElementsByName(i+"-"+j)[0].value] = table.rows[i].cells[j].value;
+                    row[i+"-"+j] = document.getElementsByName(i+"-"+j)[0].value; //TODO arreglar
+                }
+                if (!jQuery.isEmptyObject(row)) {
+                    json_table.push(row);
+                }
+            }
+            rubric.n_compliance_lvl = table.rows[0].cells.length;
+            rubric.n_evaluated_aspect = table.rows.length - 1;
+            rubric.rubric = json_table;
+            var jsonString= JSON.stringify(rubric);
+            $('<input type="hidden" name="json"/>').val(jsonString).appendTo('#rubric-form');
+            $("#rubric-form").submit();
         }
+
+        function isValid() {
+            var table = document.getElementById("rubric-table");
+
+            // validate first row as numbers
+            for(var j=0; j< table.rows[0].cells.length; i++) {
+                if (isNaN(document.getElementsByName(0+"-"+j)[0].value)) {
+                    return false;
+                };
+            }
+
+            // validate sum of scores as 6
+            var max_sum = 0;
+            for(var i=0; i< table.rows.length; i++) {
+                max_sum += parseFloat(table.rows[0].cells[-1].value);
+            }
+
+            return max_sum == 6;
+        }
+
+        function addRow() {
+            var table = document.getElementById("rubric-table");
+            var number_rows = table.rows.length;
+            var row = table.insertRow(number_rows);
+            for(var i=0; i<table.rows[0].cells.length; i++) {
+                var newcell = row.insertCell(i);
+                var cell_name = number_rows + "-" + i;
+                newcell.innerHTML = "<textarea name=" + cell_name +"></textarea>"
+            }
+        }
+
+        function addColumn() {
+            var table = document.getElementById("rubric-table");
+            var number_columns = table.rows[0].cells.length;
+            for (var i = 0; i < table.rows.length; i++) {
+                var newcell = table.rows[i].insertCell(number_columns);
+                var cell_name = i + "-" + number_columns;
+                newcell.innerHTML = "<textarea name=" + cell_name +"></textarea>"
+
+            }
+        }
+
+        function deleteRow() {
+            var table = document.getElementById("rubric-table");
+            if (table.rows.length > 1) {
+                table.deleteRow(-1);
+            }
+        }
+
+        function deleteColumn() {
+            var table = document.getElementById("rubric-table");
+            if (table.rows[0].cells.length > 1) {
+                for (var i = 0; i < table.rows.length; i++) {
+                table.rows[i].deleteCell(-1);
+            }
+
+            }
+        }
+
+        function onClick(id) {
+            console.log('toggling readonly property');
+            var element = $("#" + id);
+            element.prop('readonly', false); // toggle
+        }
+
+        function lostFocus(id) {
+            console.log('lostFocust');
+            var element = $("#" + id);
+            element.prop('readonly', true);
+        }
+
+        function setSelectionRange(input, selectionStart, selectionEnd) {
+            if (input.setSelectionRange) {
+                input.focus();
+                input.setSelectionRange(selectionStart, selectionEnd);
+            }
+            else if (input.createTextRange) {
+                var range = input.createTextRange();
+                range.collapse(true);
+                range.moveEnd('character', selectionEnd);
+                range.moveStart('character', selectionStart);
+                range.select();
+            }
+        }
+
+        function setCaretToPos (input, pos) {
+            setSelectionRange(input, pos, pos);
+        }
+
     </script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/table-to-json@0.13.0/lib/jquery.tabletojson.min.js" integrity="sha256-AqDz23QC5g2yyhRaZcEGhMMZwQnp8fC6sCZpf+e7pnw=" crossorigin="anonymous"></script>
+
 {% endblock %}
 
 {% block content %}
-<!-- !PAGE CONTENT! -->
-<div class="w3-main" style="margin-left:340px;margin-right:40px">
+    <!-- !PAGE CONTENT! -->
+    <div class="w3-main" style="margin-left:340px;margin-right:40px">
+<form action="" method="post" id="rubric-form" >
+        {% csrf_token %}
+        <input id="rubric-title" class="w3-xxxlarge w3-text-red" style="margin: 2%;border: none;background: transparent;" value="Título">
+{#        <h1 class="w3-xxxlarge w3-text-red" style="margin: 2%;"><b>Ficha de rúbrica</b></h1>#}
 
-  <h1 class="w3-xxxlarge w3-text-red" style="margin: 2%;"><b>Ficha de rúbrica</b></h1>
+        <!DOCTYPE html>
+        <div class="w3-row w3-container">
+            <div class="w3-col">
+                <head>
+                    <style>
+                        .button2 {
+                            background-color: #c6bdbb; /* Green */
+                            border: none;
+                            color: black;
+                            padding: 15px 32px;
+                            text-align: center;
+                            text-decoration: none;
+                            display: inline-block;
+                            font-size: 16px;
+                            margin: 0.2px 2px;
+                            cursor: pointer;
+                        }
 
-  <!DOCTYPE html>
-  <div class="w3-row w3-container">
-    <div class="w3-col">
-      <head>
-        <style>
-          .button2 {
-            background-color: #c6bdbb; /* Green */
-            border: none;
-            color: black;
-            padding: 15px 32px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 0.2px 2px;
-            cursor: pointer;
-          }
-
-          .button2 {width: 50%; border-radius: 12px;}
-          .button2.button2:hover {background-color: #FFA07A;}
+                        .button2 {width: 50%; border-radius: 12px;}
+                        .button2.button2:hover {background-color: #FFA07A;}
 
 
-        </style>
-      </head>
-      <body>
-        <button class="button2 button2">Título de la rúbrica  <i class="fas fa-edit"></i></button><br>
-      </body>
+                    </style>
+                </head>
+                <body>
+                <button type="button" class="button2 button2" onclick="setCaretToPos(document.getElementById('rubric-table', 4)); onClick('rubric-title')"
+                        onblur="lostFocus('rubric-title')"> Título de la rúbrica <i class="fas fa-edit"></i></button><br>
+                </body>
+            </div>
+
+            <div class = "w3-col" align="right">
+                <head>
+
+                    <style>
+                        body {font-family: Arial, Helvetica, sans-serif;}
+
+                        .form-inline label {
+                            margin: 5px 0 5px 0;
+                        }
+
+                        .form-inline input {
+                            vertical-align: middle;
+                            margin: 5px 10px ;
+                            padding: 5px;
+                            width: 10%;
+                            background-color: #fff;
+                            border: 1px solid #ddd;
+                        }
+
+                        .form-inline button {
+                            padding: 5px 10px;
+                            background-color: #c6bdbb;
+                            border: none;
+                            color: black;
+                            cursor: pointer;
+                            border-radius: 8px;
+                        }
+
+                        .form-inline button:hover {
+                            background-color: #FFA07A;
+                        }
+
+
+                    </style>
+                </head>
+                <body>
+{#                <form class="form-inline">#}
+{#                    <label>Intervalo de presentación</label>#}
+{#                    <input placeholder="Ej: 7-10" name="intervalo">#}
+{#                    <button type="submit">Ok</button>#}
+{#                </form>#}
+                </body>
+            </div>
+        </div>
     </div>
 
-    <div class = "w3-col" align="right">
-      <head>
-
-        <style>
-          body {font-family: Arial, Helvetica, sans-serif;}
-
-          .form-inline label {
-            margin: 5px 0 5px 0;
-          }
-
-          .form-inline input {
-            vertical-align: middle;
-            margin: 5px 10px ;
-            padding: 5px;
-            width: 10%;
-            background-color: #fff;
-            border: 1px solid #ddd;
-          }
-
-          .form-inline button {
-            padding: 5px 10px;
-            background-color: #c6bdbb;
-            border: none;
-            color: black;
-            cursor: pointer;
-            border-radius: 8px;
-          }
-
-          .form-inline button:hover {
-            background-color: #FFA07A;
-          }
-
-
-        </style>
-      </head>
-      <body>
-        <form class="form-inline">
-          <label>Intervalo de presentación</label>
-          <input placeholder="Ej: 7-10" name="intervalo">
-          <button type="submit">Ok</button>
-        </form>
-      </body>
-    </div>
-  </div>
-</div>
-
-  <head>
-    <style>
-      table {
-        font-family: arial, sans-serif;
-        border-collapse: collapse;
-        width: 100%;
-        cursor: pointer;
-        margin: 10px 0.5% 0.5%;
-      }
-
-      td, th {
-        border: 1px solid #665f5f;
-        text-align: left;
-        width: 20%;
-        padding: 2.3%;
-      }
-
-      tr:nth-child(even) {
-        background-color: #FFA07A;
-      }
-    </style>
-  </head>
-  <body>
-
-  <form action="" method="post" id="rubric-form">
-      {% csrf_token %}
-  <table id="rubric-table">
-    <tr>
-      <th></th>
-      <th>Asignar puntajes    <i class="fas fa-edit"></i></th>
-      <th></th>
-      <th></th>
-      <th></th>
-    </tr>
-    <tr>
-      <td><b>Modificar aspecto  <i class="fas fa-edit"></i></b></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-    <tr>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-    <tr>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-    <tr>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-     <tr>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-     <tr>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-  </table>
-</form>
-  </body>
-
-  <div>
     <head>
-      <style>
-        .btn-group .button {
-          background-color: #c6bdbb;
-          border: none;
-          color: black;
-          padding: 15px 4.6%;
-          text-align: center;
-          text-decoration: none;
-          display: inline-block;
-          font-size: 16px;
-          cursor: pointer;
-          float: left;
-          margin: 18px 2%;
-        }
+        <style>
+            table {
+                font-family: arial, sans-serif;
+                border-collapse: collapse;
+                width: 100%;
+                cursor: pointer;
+                margin: 20px 0.5% 0.5%;
+                font-size: 15px;
+            }
+            textarea {
+                width: 100%;
+                top: 0; left: 0; right: 0; bottom: 0;
+                position: absolute;
+                resize: none;
+                -webkit-box-sizing: border-box; /* <=iOS4, <= Android  2.3 */
+                -moz-box-sizing: border-box; /* FF1+ */
+                box-sizing: border-box; /* Chrome, IE8, Opera, Safari 5.1*/
+            }
+            textarea:focus{
+                outline: none;
+            }
+            td, th {
+                border: 1px solid #665f5f;
+                text-align: left;
+                width: 20%;
+                padding: 2.3%;
+            }
+            table, td, th {
+                position: relative;
+                border: 1px solid black;
+            }
 
-        .btn-group .button { border-radius: 12px;}
+            tr:nth-child(even) {
+                background-color: #FFA07A;
+            }
 
-        .btn-group .button:hover { background-color: #FFA07A; }
-
-      </style>
+        </style>
     </head>
-      <script>
-          function addRow() {
-              var table = document.getElementById("rubric-table");
-              var row = table.insertRow(-1)
-              for(var i=0; i<table.rows[0].length; i++) {
-                  var newcell = row.insertCell(i)
-                  newcell.innerHTML = ""
-              }
-          }
-          
-          function addColumn() {
-              var table = document.getElementById("rubric-table");
-              for (var i = 0; i < table.rows.length; i++) {
-                  var newcell = table.rows[i].insertCell(-1)
-                  newcell.innerHTML = ""
-              }
-          }
-      </script>
     <body>
-      <div class="btn-group">
-        <button class="button" onclick="addRow()">Agregar fila  <i class="fas fa-plus"></i></button>
-        <button class="button" onclick="addColumn()">Agregar columna <i class="fas fa-plus"></i></button>
-        <button class="button">Borrar fila  <i class="fas fa-trash"></i></button>
-        <button class="button">Borrar columna  <i class="fas fa-trash"></i></button>
-      </div>
+
+
+
+        <table id="rubric-table">
+            {% if table_data %}
+                {% for row in table_data %}
+                    <tr>
+                        {% for cell_name, cell_content in row %}
+                            <td> <textarea name={{ cell_name }}>{{ cell_content }}</textarea> </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </table>
+
+    </form>
     </body>
-  </div>
 
-  <head>
-    <style>
-    .button1 {
-      background-color: #BF1010;
-      border: none;
-      color: white;
-      padding: 45px;
-      text-align: center;
-      text-decoration: none;
-      display: inline-block;
-      font-size: 16px;
-      margin: 10px 78%;
-      cursor: pointer;
-    }
+    <div>
+        <head>
+            <style>
+                .btn-group .button {
+                    background-color: #c6bdbb;
+                    border: none;
+                    color: black;
+                    padding: 15px 4.6%;
+                    text-align: center;
+                    text-decoration: none;
+                    display: inline-block;
+                    font-size: 16px;
+                    cursor: pointer;
+                    float: left;
+                    margin: 18px 2%;
+                }
 
-    .button1 {border-radius: 12px;}
-    .button1.button1:hover {background-color: #FFA07A;}
+                .btn-group .button { border-radius: 12px;}
 
-    </style>
-  </head>
-  <body>
-    <button class="button1 button1" type="submit" form="rubric-form">Guardar rúbrica  <i class="far fa-save"></i></button>
-  </body>
+                .btn-group .button:hover { background-color: #FFA07A; }
+
+            </style>
+        </head>
+        <script>
+
+        </script>
+        <body>
+        <div class="btn-group">
+            <button class="button" onclick="addRow();">Agregar fila  <i class="fas fa-plus"></i></button>
+            <button class="button" onclick="addColumn();">Agregar columna <i class="fas fa-plus"></i></button>
+            <button class="button" onclick="deleteRow();">Borrar fila  <i class="fas fa-trash"></i></button>
+            <button class="button" onclick="deleteColumn();">Borrar columna  <i class="fas fa-trash"></i></button>
+        </div>
+        </body>
+    </div>
+
+    <head>
+        <style>
+            .button1 {
+                background-color: #BF1010;
+                border: none;
+                color: white;
+                padding: 45px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+                margin: 10px 78%;
+                cursor: pointer;
+            }
+
+            .button1 {border-radius: 12px;}
+            .button1.button1:hover {background-color: #FFA07A;}
+        </style>
+    </head>
+    <body>
+    <button type="submit" form="rubric-form" onclick="submitform()" class="button1 button1" id="postbutton">Guardar rúbrica  <i class="far fa-save"></i></button>
+{#    <input type="submit" form="rubric-form" value="Guardar rúbrica" class="button1 button1" id="postbutton" onclick="submitform()"/>#}
+    </body>
 
 
 
-<!-- End page content -->
-{#</>#}
+
+
+    <!-- End page content -->
+    {#</>#}
 {% endblock %}
 
 <!-- W3.CSS Container -->
 <div class="w3-light-grey w3-container w3-padding-32" style="margin-top:75px;padding-right:58px"><p class="w3-right">Powered by <a href="https://www.w3schools.com/w3css/default.asp" title="W3.CSS" target="_blank" class="w3-hover-opacity">w3.css</a></p></div>
-
-<script>
-
-</script>
 
 </body>
 </html>
