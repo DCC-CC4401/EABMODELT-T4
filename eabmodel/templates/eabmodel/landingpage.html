@@ -9,16 +9,32 @@
     <!-- !PAGE CONTENT! -->
     <div class="w3-main" style="margin-left:340px;margin-right:40px">
 
-    <!-- Portada -->
-    <div class="w3-container" id="portada" style="margin-top:300px; margin-bottom:300px">
-        <h1 class="w3-xxxlarge w3-text-red"><b>Bienvenido al sistema de evaluación</b></h1>
-        <hr style="width:50px;border:5px solid red" class="w3-round">
-        <p><h3>Seleccione alguna sección para comenzar</h3></p>
-        <i class="far fa-arrow-alt-circle-left" style="font-size:300%"></i>
-    </div>
+        <!-- Portada -->
+        <div class="w3-container" id="portada" style="margin-top:50px; margin-bottom:10px">
+            <h1 class="w3-xxxlarge w3-text-red"><b>Bienvenido al sistema de evaluación</b></h1>
+            <hr style="width:50px;border:5px solid red" class="w3-round">
+            <p><h3>Seleccione alguna sección para comenzar</h3></p>
+            <i class="far fa-arrow-alt-circle-left" style="font-size:300%"></i>
+            <br style="height:50px">
+            <h2 class="w3-right w3-xxlarge w3-text-red" style="margin-bottom:10px"><b>Últimas evaluaciones</b></h2>
+            <table class="w3-table w3-striped w3-hoverable">
+                <tr class="w3-red">
+                    <th>Evaluación</th> <th>Fecha</th> <th>Curso</th> <th>Rúbrica</th>
+                </tr>
+                {% for eval in top10_eval %}
+                <tr class="w3-hover-green">
+                    <th>{{ eval.name }}</th>
+                    <th>{{ eval.date }}</th>
+                    <th>{{ eval.course.code }}</th>
+                    <th>{{ eval.rubric.name }}</th>
+                </tr>
+                {% endfor %}
+                </table>
+        </div>
 
-    </div>
-        <p class="w3-right">Powered by <a href="https://www.w3schools.com/w3css/default.asp" title="W3.CSS" target="_blank" class="w3-hover-opacity">w3.css</a></p>
+        <div>
+            <p class="w3-right">Powered by <a href="https://www.w3schools.com/w3css/default.asp" title="W3.CSS" target="_blank" class="w3-hover-opacity">w3.css</a></p>
+        </div>
     </div>
 
 {% endblock %}

@@ -1,12 +1,9 @@
-{% extends 'eabmodel/base.html' %}
-{#{% load static %}#}
-
+{% extends 'rubrica/base.html' %}
 
 {% block head %}
 {% endblock %}
 
 {% block content %}
-
     <!-- !PAGE CONTENT! -->
     <div class="w3-main" style="margin-left:340px;margin-right:40px"
 
@@ -48,20 +45,18 @@
       <button class="w3-button w3-large w3-red w3-right w3-round">Eliminar</button>
     </div>
     </div>
+
+
     </div>
-
-{% endblock %}
-
-{% block footer %}
     <script>
-        function myFunction(id) {
-          var x = document.getElementById(id);
-          if (x.className.indexOf("w3-show") == -1) {
-            x.className += " w3-show";
-          } else {
-            x.className = x.className.replace(" w3-show", "");
-          }
-        }
+    function myFunction(id) {
+      var x = document.getElementById(id);
+      if (x.className.indexOf("w3-show") == -1) {
+        x.className += " w3-show";
+      } else {
+        x.className = x.className.replace(" w3-show", "");
+      }
+    }
     </script>
 
 {% endblock %}
