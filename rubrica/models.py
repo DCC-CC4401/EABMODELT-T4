@@ -5,9 +5,8 @@ from django.utils import timezone
 
 class Rubric(models.Model):
     name = models.CharField(max_length=255)
-
-    #suggested_presentation_time = models.TimeField()
-
+    #min_presentation_time = models.DateTimeField()
+    #max_presentation_time = models.DateTimeField()
     n_compliance_lvl = models.PositiveSmallIntegerField()
     n_evaluated_aspect = models.PositiveSmallIntegerField()
     rubric = models.TextField()

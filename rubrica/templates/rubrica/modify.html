@@ -122,7 +122,16 @@
 
     </script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/table-to-json@0.13.0/lib/jquery.tabletojson.min.js" integrity="sha256-AqDz23QC5g2yyhRaZcEGhMMZwQnp8fC6sCZpf+e7pnw=" crossorigin="anonymous"></script>
+    {% if success_alert %}
+        <script>
+            if (confirm("Desea seguir editando?")) {
 
+            } else {
+                location.replace("../")
+            }
+
+        </script>
+    {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -130,7 +139,7 @@
     <div class="w3-main" style="margin-left:340px;margin-right:40px">
 <form action="" method="post" id="rubric-form" >
         {% csrf_token %}
-        <input id="rubric-title" class="w3-xxxlarge w3-text-red" style="margin: 2%;border: none;background: transparent;" value="Título">
+        <input id="rubric-title" class="w3-xxxlarge w3-text-red" style="margin: 2%;border: none;background: transparent;" value={{ title }}>
 {#        <h1 class="w3-xxxlarge w3-text-red" style="margin: 2%;"><b>Ficha de rúbrica</b></h1>#}
 
         <!DOCTYPE html>
@@ -161,7 +170,7 @@
                 <button type="button" class="button2 button2" onclick="setCaretToPos(document.getElementById('rubric-table', 4)); onClick('rubric-title')"
                         onblur="lostFocus('rubric-title')"> Título de la rúbrica <i class="fas fa-edit"></i></button><br>
                 </body>
-            </div>
+
 
             <div class = "w3-col" align="right">
                 <head>
@@ -222,6 +231,7 @@
             textarea {
                 width: 100%;
                 top: 0; left: 0; right: 0; bottom: 0;
+                padding: 5px;
                 position: absolute;
                 resize: none;
                 -webkit-box-sizing: border-box; /* <=iOS4, <= Android  2.3 */
@@ -333,6 +343,7 @@
 
     <!-- End page content -->
     {#</>#}
+    </div>
 {% endblock %}
 
 <!-- W3.CSS Container -->

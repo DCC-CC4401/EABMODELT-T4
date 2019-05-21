@@ -10,12 +10,11 @@ def index(request):
     return render(request, 'rubrica/index.html', context={})
 
 
-def seeRubric(request, rubric_id=1):
+def seeRubric(request, rubric_id=36):
     # TODO crear contexto a partir de rubric_id
-    # rubric = get_object_or_404(Rubric, pk=rubric_id)
-    # data = open("rubrica/convertjson.json", 'r')
-    # data = json.load(data)
-    # print(data)
+    rubric = get_object_or_404(Rubric, pk=rubric_id)
+    data = json.loads(rubric.rubric, encoding='uft-8')
+    print(data["rubric"])
     # context={'data':data}
     data = {}
     return render(request, 'rubrica/ver.html', context=data)
@@ -24,9 +23,6 @@ def seeRubric(request, rubric_id=1):
 def createRubric(request):
     # TODO crear contexto vacío
     if request.method == 'POST':
-        print(request.body.decode('utf-8'))
-        # body_unicode = request.body.decode('utf-8')
-        # body = json.loads(body_unicode)
         # TODO crear/parsear json, agregar modelo a la bd, mostrar pagina de "logrado"
         json_string = request.POST.get("json")
         data = json.loads(json_string, encoding='uft-8')
@@ -38,16 +34,22 @@ def createRubric(request):
             n_evaluated_aspect=data['n_evaluated_aspect'],
             # created_at=1,
             # updated_at=1,
-            rubric=""
+            rubric=json_string
         )
-        return HttpResponse(json_string)
-    # table_data = []
-    data = {"table_data": [[("0-0", ""), ("0-1", ""), ("0-2", ""), ("0-3", "")], [("1-0", ""), ("1-1", ""), ("1-2", ""), ("1-3", "")]]}
-    # data = {"table_data" : []}
-    return render(request, 'rubrica/crear.html', context=data)
+        #return HttpResponse(json_string)
+        data = {"success_alert" : True}
+        return render(request, 'rubrica/modify.html', context=data)
+
+    # empty initial table
+    data = {"table_data": [[("0-0", ""), ("0-1", ""), ("0-2", ""), ("0-3", "")],
+                           [("1-0", ""), ("1-1", ""), ("1-2", ""), ("1-3", "")]],
+            "success_alert": False,
+            "title" : "Título"
+            }
+    return render(request, 'rubrica/modify.html', context=data)
 
 
-def modifyRubric(request, rubric_id=0):
+def modifyRubric(request, rubric_id=36):
     rubric = get_object_or_404(Rubric, pk=rubric_id)
     # TODO crear contexto a partir de rubric_id
     if request.method == 'POST':
@@ -58,20 +60,20 @@ def modifyRubric(request, rubric_id=0):
         rubric.completed = data['completed']
         rubric.n_compliance_lvl = data['n_compliance_lvl']
         rubric.n_evaluated_aspect = data['n_evaluated_aspect']
-        rubric.rubric = ""
+        rubric.rubric = json_string
         return HttpResponse(json_string)
 
-    table1 = json.loads(rubric.rubric, encoding='uft-8')
-    table1["rubric"]
+    data = json.loads(rubric.rubric, encoding='uft-8')
     table = []
-    for i in range(len(table1["rubric"])):
+    for i in range(len(data["rubric"])):
         row = []
-        for j in range(len(table1["rubric"][i])):
-            cell_name = i + "-" + j
-            cell_content = ""
+        for j in range(len(data["rubric"][i])):
+            cell_name = str(i) + "-" + str(j)
+            cell_content = data["rubric"][i][cell_name]
             row.append((cell_name, cell_content))
         table.append(row)
-    data = {}
-    data["name"] = rubric.name
-    data["table"] = []
-    return render(request, 'rubrica/ver.html', context=data)
+    data = {
+        "title": rubric.name,
+        "table_data": table,
+    }
+    return render(request, 'rubrica/modify.html', context=data)
