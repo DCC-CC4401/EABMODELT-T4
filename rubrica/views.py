@@ -24,8 +24,14 @@ def createRubric(request):
     # TODO crear contexto vacío
     if request.method == 'POST':
         # TODO crear/parsear json, agregar modelo a la bd, mostrar pagina de "logrado"
+
+        json_string = request.body.decode('utf-8')
+        print(json_string)
+        return HttpResponse("aaaaaaaaaaaaaaaaaaaaaa")
+
+
         json_string = request.POST.get("json")
-        data = json.loads(json_string, encoding='uft-8')
+        data = json.loads(json_string, encoding='utf-8')
         new_rubric = Rubric.objects.create(
             name=data['name'],
             # suggested_presentation_time=data['suggested_presentation_time'],
@@ -36,13 +42,11 @@ def createRubric(request):
             # updated_at=1,
             rubric=json_string
         )
-        #return HttpResponse(json_string)
-        data = {"success_alert" : True}
-        return render(request, 'rubrica/modify.html', context=data)
-
+        return HttpResponse(json_string)
+        #data = {"success_alert" : True}
+        #return render(request, 'rubrica/modify.html', context=data)
     # empty initial table
-    data = {"table_data": [[("0-0", ""), ("0-1", ""), ("0-2", ""), ("0-3", "")],
-                           [("1-0", ""), ("1-1", ""), ("1-2", ""), ("1-3", "")]],
+    data = {"table_data": [["", "", "", "", ""],["", "", "", "", ""]],
             "success_alert": False,
             "title" : "Título"
             }

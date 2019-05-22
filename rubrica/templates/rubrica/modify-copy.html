@@ -3,45 +3,9 @@
 
 
 {% block head %}
-      <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"> </script>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js"> </script>
     <script>
-    var token = '{{ csrf_token }}';
-        $(function () {
-            $("#dialog-confirm").dialog({
-                            autoOpen: false,
-                            resizable: false,
-                            height:300,
-                            modal: true,
-                            buttons: {
-                                "Seguir editando": function() {
-                                    $(this).dialog( "close" );
-                                },
-                                "Volver al menu": function() {
-                                    $(this).dialog( "close" );
-                                    location.replace("../")
-                                }
-                            }
-                        });
-
-            $('#rubric-form').submit(function (event) {
-                event.preventDefault();
-
-                $.ajax({
-                    headers: {"X-CSRFToken": token},
-                    type: "POST",
-                    url: "/rubrica/crear/",
-                    data: json_data(),
-                    dataType: 'json',
-                });
-                return false;
-            });
-        })
-    </script>
-
-    <script>
-        function json_data() {
+        function submitform() {
             var rubric = {};
             rubric.name = document.getElementById("rubric-title").value;
             rubric.suggested_presentation_time = Date.now();
@@ -50,27 +14,20 @@
             var json_table = [];
             var table = document.getElementById("rubric-table");
 
-            for(var i=1, row; row = table.rows[i]; i++) {
-                var row_to_append = {};
-                for(var j=0, col; col = row.cells[j]; j++) {
-                    if (j == 0) {
-                        row_to_append.aspecto = col.children[0].value;
-                    } else {
-                        row_to_append[table.rows[0].cells[j].children[0].value] = col.children[0].value;
-                    }
+            for(var i=0; i<table.rows.length; i++) {
+                var row = {};
+                for(var j=0; j<table.rows[i].cells.length; j++) {
+                    //row[document.getElementsByName(i+"-"+j)[0].value] = table.rows[i].cells[j].value;
+                    row[i+"-"+j] = document.getElementsByName(i+"-"+j)[0].value; //TODO arreglar
                 }
-                if (!jQuery.isEmptyObject(row_to_append)) {
-                    json_table.push(row_to_append);
+                if (!jQuery.isEmptyObject(row)) {
+                    json_table.push(row);
                 }
             }
             rubric.n_compliance_lvl = table.rows[0].cells.length;
             rubric.n_evaluated_aspect = table.rows.length - 1;
             rubric.rubric = json_table;
-            return JSON.stringify(rubric);
-        }
-
-        function submitform() {
-            var jsonString= json_data();
+            var jsonString= JSON.stringify(rubric);
             $('<input type="hidden" name="json"/>').val(jsonString).appendTo('#rubric-form');
             $("#rubric-form").submit();
         }
@@ -79,10 +36,10 @@
             var table = document.getElementById("rubric-table");
 
             // validate first row as numbers
-            for(var j=0, col; col = table.rows[0].cells[j]; j++) {
-                if (isNaN(col.children[0].value)) {
+            for(var j=0; j< table.rows[0].cells.length; i++) {
+                if (isNaN(document.getElementsByName(0+"-"+j)[0].value)) {
                     return false;
-                }
+                };
             }
 
             // validate sum of scores as 6
@@ -96,18 +53,22 @@
 
         function addRow() {
             var table = document.getElementById("rubric-table");
-            var row = table.insertRow(-1);
+            var number_rows = table.rows.length;
+            var row = table.insertRow(number_rows);
             for(var i=0; i<table.rows[0].cells.length; i++) {
                 var newcell = row.insertCell(i);
-                newcell.innerHTML = "<textarea></textarea>"
+                var cell_name = number_rows + "-" + i;
+                newcell.innerHTML = "<textarea name=" + cell_name +"></textarea>"
             }
         }
 
         function addColumn() {
             var table = document.getElementById("rubric-table");
+            var number_columns = table.rows[0].cells.length;
             for (var i = 0; i < table.rows.length; i++) {
-                var newcell = table.rows[i].insertCell(-1);
-                newcell.innerHTML = "<textarea></textarea>"
+                var newcell = table.rows[i].insertCell(number_columns);
+                var cell_name = i + "-" + number_columns;
+                newcell.innerHTML = "<textarea name=" + cell_name +"></textarea>"
 
             }
         }
@@ -123,21 +84,58 @@
             var table = document.getElementById("rubric-table");
             if (table.rows[0].cells.length > 1) {
                 for (var i = 0; i < table.rows.length; i++) {
-                    table.rows[i].deleteCell(-1);
-                }
+                table.rows[i].deleteCell(-1);
+            }
+
             }
         }
 
+        function onClick(id) {
+            console.log('toggling readonly property');
+            var element = $("#" + id);
+            element.prop('readonly', false); // toggle
+        }
+
+        function lostFocus(id) {
+            console.log('lostFocust');
+            var element = $("#" + id);
+            element.prop('readonly', true);
+        }
+
+        function setSelectionRange(input, selectionStart, selectionEnd) {
+            if (input.setSelectionRange) {
+                input.focus();
+                input.setSelectionRange(selectionStart, selectionEnd);
+            }
+            else if (input.createTextRange) {
+                var range = input.createTextRange();
+                range.collapse(true);
+                range.moveEnd('character', selectionEnd);
+                range.moveStart('character', selectionStart);
+                range.select();
+            }
+        }
+
+        function setCaretToPos (input, pos) {
+            setSelectionRange(input, pos, pos);
+        }
 
     </script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/table-to-json@0.13.0/lib/jquery.tabletojson.min.js" integrity="sha256-AqDz23QC5g2yyhRaZcEGhMMZwQnp8fC6sCZpf+e7pnw=" crossorigin="anonymous"></script>
+    {% if success_alert %}
+        <script>
+            if (confirm("Desea seguir editando?")) {
 
+            } else {
+                location.replace("../")
+            }
+
+        </script>
+    {% endif %}
 {% endblock %}
 
 {% block content %}
     <!-- !PAGE CONTENT! -->
-    <div id="dialog-confirm" title="¿Seguir editando?">
-  <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>Su rúbrica fue guardada satisfactoriamente. ¿Qué desea hacer?</p>
-</div>
     <div class="w3-main" style="margin-left:340px;margin-right:40px">
 <form action="" method="post" id="rubric-form" >
         {% csrf_token %}
@@ -267,17 +265,17 @@
             {% if table_data %}
                 {% for row in table_data %}
                     <tr>
-                        {% for cell_content in row %}
-                            <td> <textarea>{{ cell_content }}</textarea> </td>
+                        {% for cell_name, cell_content in row %}
+                            <td> <textarea name={{ cell_name }}>{{ cell_content }}</textarea> </td>
                         {% endfor %}
                     </tr>
                 {% endfor %}
             {% endif %}
         </table>
 
-
+    </form>
     </body>
-</form>
+
     <div>
         <head>
             <style>
@@ -335,8 +333,7 @@
         </style>
     </head>
     <body>
-{#    <button type="submit" form="rubric-form" onclick="submitform()" class="button1 button1" id="postbutton">Guardar rúbrica  <i class="far fa-save"></i></button>#}
-    <button type="submit" form="rubric-form" class="button1 button1" id="postbutton">Guardar rúbrica  <i class="far fa-save"></i></button>
+    <button type="submit" form="rubric-form" onclick="submitform()" class="button1 button1" id="postbutton">Guardar rúbrica  <i class="far fa-save"></i></button>
 {#    <input type="submit" form="rubric-form" value="Guardar rúbrica" class="button1 button1" id="postbutton" onclick="submitform()"/>#}
     </body>
 
@@ -351,3 +348,6 @@
 
 <!-- W3.CSS Container -->
 <div class="w3-light-grey w3-container w3-padding-32" style="margin-top:75px;padding-right:58px"><p class="w3-right">Powered by <a href="https://www.w3schools.com/w3css/default.asp" title="W3.CSS" target="_blank" class="w3-hover-opacity">w3.css</a></p></div>
+
+</body>
+</html>
