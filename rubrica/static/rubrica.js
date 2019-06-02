@@ -67,7 +67,7 @@ function isValidScores() {
 }
 
 function isValidTexts() {
-    // todo recorrer tabla y chequear que no haya intermedios vacios
+    // recorrer tabla y chequea que no haya intermedios vacios
     var table = document.getElementById("rubric-table");
 
     for(var i=1, row; row = table.rows[i]; i++) {
