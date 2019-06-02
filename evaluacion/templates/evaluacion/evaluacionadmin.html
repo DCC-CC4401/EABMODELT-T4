@@ -117,12 +117,13 @@
     }
 
     var selectedOptions = [];
-    function buttonClick(param,level){
+    function buttonClick(param,level,decimal){
+        var lvl = level + decimal/10;
         var text = "#option" + param.toString() + " :button";
         $(text).click(function(){
             $(text).css("background-color","#DDDDDD");
             $(this).css("background-color","#31BE00");
-            addToSelec(param,$(this).text(),level);
+            addToSelec(param,$(this).text(),lvl);
         })
     }
 
@@ -212,7 +213,7 @@
         dataToSend.updated_at = Date.now();
         dataToSend.grade_detail = JSON.stringify(selectedOptions);
         dataToSend.comment = "";
-        dataToSend.time = document.getElementById("minutes").value + ":" + document.getElementById("seconds");
+        dataToSend.time = document.getElementById("minutes").value + ":" + document.getElementById("seconds").value;
         dataToSend.presenters = JSON.stringify(presenters);
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function(){

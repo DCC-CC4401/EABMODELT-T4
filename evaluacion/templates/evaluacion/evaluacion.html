@@ -53,12 +53,13 @@
 
     <script>
     var selectedOptions = [];
-    function buttonClick(param,level){
+    function buttonClick(param,level,decimal){
+        var lvl = level + decimal/10;
         var text = "#option" + param.toString() + " :button";
         $(text).click(function(){
             $(text).css("background-color","#DDDDDD");
             $(this).css("background-color","#31BE00");
-            addToSelec(param,$(this).text(),level);
+            addToSelec(param,$(this).text(),lvl);
         })
     }
 
@@ -67,7 +68,7 @@
         for(i; i < selectedOptions.length; i++){
             if(selectedOptions[i][0] === par){
                 selectedOptions[i][1] = text;
-                selectedOptions[i][2] = lvl;
+                selectedOptions[i][2] = parseFloat(lvl);
                 return;
             }
         }
@@ -131,6 +132,7 @@
         dataToSend.updated_at = Date.now();
         dataToSend.grade_detail = JSON.stringify(selectedOptions);
         dataToSend.comment = "";
+        dataToSend.time = "NoAdmin:NoAdmin";
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function(){
             if (this.readyState == 4){
