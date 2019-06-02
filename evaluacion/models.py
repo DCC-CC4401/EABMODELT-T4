@@ -14,9 +14,9 @@ class Evaluation(models.Model):
 
     name = models.CharField(max_length=255)
     date = models.DateTimeField()
-    course = models.ForeignKey(Course, on_delete = models.PROTECT)
+    course = models.ForeignKey(Course, on_delete=models.PROTECT)
 
-    rubric = models.ForeignKey(Rubric, on_delete = models.PROTECT)
+    rubric = models.ForeignKey(Rubric, on_delete=models.PROTECT)
     presentation_time = models.TimeField()
 
     evaluators = models.ManyToManyField(EvaluatorUser)
@@ -31,8 +31,9 @@ class TeamEvaluation(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     evaluation = models.ForeignKey(Evaluation, models.PROTECT)
     presenter = models.ManyToManyField(Student)
-    start_time = models.DateTimeField()
-    end_time = models.DateTimeField()
+    # start_time = models.DateTimeField()
+    # end_time = models.DateTimeField()
+    duration = models.PositiveSmallIntegerField()
     is_active = models.BooleanField(default=False)
 
 
