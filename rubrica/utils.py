@@ -3,19 +3,16 @@
 def rubric_to_table(rubric):
     """
 
-    :param rubric: dict
+    :param rubric: [] of dicts
     :return: [][]
     """
     table = []  # table[rows][columns]
 
     # header
-    decimals = [float(key) for key in rubric[0] if key != "aspecto"]
-    decimals.sort()
-    table.append([""] + [str(value) for value in decimals])
+    table.append([key for key, value in rubric[0].items()])
 
     # body
     for row in rubric:  # row is a dict
-        table.append(
-            [row.pop("aspecto")] + [value for key, value in sorted(row.items(), key=lambda item: float(item[0]))])
+        table.append([value for key, value in row.items()])
 
     return table

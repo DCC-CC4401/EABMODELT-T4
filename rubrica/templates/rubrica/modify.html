@@ -4,6 +4,8 @@
 
 {% block head %}
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="{% static "rubrica.css" %}">
+
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"> </script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
 
@@ -20,7 +22,7 @@
     <div class="w3-main" style="margin-left:340px;margin-right:40px">
         <form action="" method="post" id="rubric-form" >
             {% csrf_token %}
-            <input id="rubric-title" class="w3-xxxlarge w3-text-red" style="margin: 2%;border: none;background: transparent;" value={{ title }}>
+            <input id="rubric-title" class="w3-xxxlarge w3-text-red rubric-title" onblur="lostFocus()" readonly value={{ title }}>
             {#        <h1 class="w3-xxxlarge w3-text-red" style="margin: 2%;"><b>Ficha de rúbrica</b></h1>#}
 
             <!DOCTYPE html>
@@ -48,8 +50,7 @@
                         </style>
                     </head>
                     <body>
-                    <button type="button" class="button2 button2" onclick="setCaretToPos(document.getElementById('rubric-table', 4)); onClick('rubric-title')"
-                            onblur="lostFocus('rubric-title')"> Título de la rúbrica <i class="fas fa-edit"></i></button><br>
+                    <button type="button" class="button2 button2" onclick="editTitle()"> Título de la rúbrica <i class="fas fa-edit"></i></button><br>
                     </body>
 
 
@@ -91,8 +92,8 @@
                         <body>
                         <div class="form-inline">
                             <label>Intervalo de presentación (en minutos)</label> </br>
-                            Min: <input style="width: 60px;" placeholder="Ej: 7" name="presentation_min">
-                            Max: <input style="width: 60px;" placeholder="Ej: 10" name="presentation_max">
+                            Min: <input style="width: 60px;" placeholder="Ej: 7" id="presentation_min" value={{ min_presentation_time }}>
+                            Max: <input style="width: 60px;" placeholder="Ej: 10" id="presentation_max" value={{ max_presentation_time }}>
                             {#                    <button type="submit">Ok</button>#}
                         </div>
                         </body>
@@ -142,12 +143,18 @@
             </head>
             <body>
 
+            <span id="status"> Status: </span> <span id="status-rubrica">   </span>
+
             <table id="rubric-table">
                 {% if table_data %}
                     {% for row in table_data %}
                         <tr>
                             {% for cell_content in row %}
-                                <td> <textarea>{{ cell_content }}</textarea> </td>
+                                {% if cell_content == "aspecto-tag" %}
+                                    <td> <b> Aspecto\Puntaje </b> </td>
+                                {% else %}
+                                    <td> <textarea>{{ cell_content }}</textarea> </td>
+                                {% endif %}
                             {% endfor %}
                         </tr>
                     {% endfor %}
