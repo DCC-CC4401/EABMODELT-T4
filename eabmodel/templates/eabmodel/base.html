@@ -33,12 +33,25 @@
       <p class="w3-center">
         <img src="https://www.w3schools.com/w3images/avatar3.png" class="w3-circle" style="height:150px;width:150px" alt="Avatar">
       </p>
-      <h3 class="w3-padding-64"><center><b>Usuario</b></center></h3>
+
+
+    <h3 class="w3-padding-64"><center><b>
+      {% if user.is_authenticated %}
+      {{ user.first_name}} {{ user.last_name}}
+      {% else %}
+          Usuario
+      {% endif %}
+
+      </b></center></h3>
     </div>
     <div class="w3-bar-block">
       <a href="{% url 'main:landing_page' %}" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Home</a>
       <a href="{% url 'main:courses' %}" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Cursos</a>
-      <a href="{% url 'main:evaluators' %}" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Evaluadores</a>
+
+      {% if user.is_admin %}
+        <a href="{% url 'main:evaluators' %}" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Evaluadores</a>
+      {% endif %}
+
       <a href="{% url 'rubrica:index'  %}" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Rúbricas</a>
       <a href="{% url 'evaluacion:index'  %}" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Evaluaciones</a>
       <a href="{% url 'main:landing_page' %}#contact" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Contact</a>
