@@ -5,8 +5,8 @@ from .models import Rubric
 # Create your views here.
 
 def index(request):
-    return render(request, 'rubrica/index.html', context={})
-
+    created_rubrics = Rubric.objects.order_by("-updated_at")
+    return render(request, 'rubrica/ver.html', {'rubrics': created_rubrics})
 
 def createRubric(request):
     # TODO crear contexto vacío
@@ -15,10 +15,8 @@ def createRubric(request):
         pass
     return render(request, 'rubrica/crear.html', context={})
 
-
-def seeRubric(request, rubric_id=0):
+def seeRubric(request):
     # TODO crear contexto a partir de rubric_id
-    # rubric = get_object_or_404(Rubric, pk=rubric_id)
     return render(request, 'rubrica/ver.html', context={})
 
 
