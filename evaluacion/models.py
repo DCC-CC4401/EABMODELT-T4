@@ -45,4 +45,3 @@ class TeamEvaluationGrade(models.Model):
     grade_detail = models.TextField()
     final_grade = models.FloatField()
     comment = models.TextField()
-
