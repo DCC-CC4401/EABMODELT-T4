@@ -17,45 +17,36 @@
         <i class="w3-large w3-text-green"><i class="far fa-clock"></i> Aún activa </i>
         <hr style="width:50px;border:5px solid red" class="w3-round">
         <div class="w3-container w3-center">
-        <p><b>Lambda-Ideas</b> Presentación Tarea 2 <i>CC4401-1/Otoño/2019</i></p>
+        <p><b>{{ team }}</b> Presentación {{ stage }}<i> {{ codigoCurso }}</i></p>
         <p><i class="w3-text-blue">Su operación se ha procesado exitosamente!</i></p> </div>
 
         <div class="w3-container">
                 <h4><b>Resumen de evaluación</b></h4>
-                <p>Contenidos</p>
+                {% for aspect in scores %}
+                <p>{{ aspect.0 }}</p>
                 <div class="w3-grey">
-                  <div class="w3-container w3-center w3-padding w3-orange" style="width:25%">25%</div>
+                    {% if aspect.1 <= 10 %}
+                        <div class="w3-container w3-center w3-padding w3-red" style="width:10%">{{ aspect.1 }}%</div>
+                    {% elif aspect.1 <= 25 %}
+                        <div class="w3-container w3-center w3-padding w3-red" style="width:{{ aspect.1 }}%">{{ aspect.1 }}%</div>
+                    {% elif aspect.1 <= 50 %}
+                        <div class="w3-container w3-center w3-padding w3-orange" style="width:{{ aspect.1 }}%">{{ aspect.1 }}%</div>
+                    {% elif aspect.1 <= 75 %}
+                        <div class="w3-container w3-center w3-padding w3-green" style="width:{{ aspect.1 }}%">{{ aspect.1 }}%</div>
+                    {% else %}
+                        <div class="w3-container w3-center w3-padding w3-blue" style="width:{{ aspect.1 }}%">{{ aspect.1 }}%</div>
+                    {% endif %}
                 </div>
-                <p>Calidad del material</p>
-                <div class="w3-grey">
-                  <div class="w3-container w3-center w3-padding w3-green" style="width:75%">75%</div>
-                </div>
-                <p>Relación con requisitos funcionales</p>
-                <div class="w3-grey">
-                  <div class="w3-container w3-center w3-padding w3-green" style="width:75%">75%</div>
-                </div>
-                <p>Organización de la información</p>
-                <div class="w3-grey">
-                  <div class="w3-container w3-center w3-padding w3-blue" style="width:100%">100%</div>
-                </div>
-                <p>Forma</p>
-                <div class="w3-grey">
-                  <div class="w3-container w3-center w3-padding w3-red" style="width:10%">0%</div>
-                </div>
-                <p>Entusiasmo</p>
-                <div class="w3-grey">
-                  <div class="w3-container w3-center w3-padding w3-orange" style="width:25%">25%</div>
-                </div>
+                {% endfor %}
 
 
                 <div class="w3-row-padding" style="margin-top:100px">
                     <div class="w3-half w3-margin-bottom ">
                         <ul class="w3-ul w3-light-grey w3-center w3-card-4">
-                          <li class="w3-red w3-xlarge w3-padding-32">Equipos pendientes<i style="margin-left: 10px" class="fas fa-user-friends"></i><br> <i class="w3-small">Comience una nueva evaluación ...</i></li>
-                          <li class="opcion w3-padding-16">Equipo Rocket <i style="margin-left: 10px" class="w3-xlarge fas fa-play-circle"></i></li>
-                          <li class="opcion w3-padding-16">Equipo Ejemplo <i style="margin-left: 10px" class="w3-xlarge fas fa-play-circle"></i></li>
-                          <li class="opcion presentado w3-padding-16">Equipo 7 <i style="margin-left: 10px" class="w3-xlarge fas fa-play-circle"></i></li>
-                          <li class="opcion w3-padding-16">Equipo Example <i style="margin-left: 10px" class="w3-xlarge fas fa-play-circle"></i></li>
+                          <li class="w3-red w3-xlarge w3-padding-32">Equipos pendientes<i style="margin-left: 10px" class="fas fa-user-friends"></i><br> <i class="w3-small">Comience una nueva evaluación...</i></li>
+                          {% for team in left_teams %}
+                            <li class="opcion w3-padding-16">{{ team.0 }} <button style="margin-left: 10px" class="w3-xlarge fas fa-play-circle" onclick="evaluateGroup({{ team.1 }})"></button></li>
+                          {% endfor %}
                         </ul>
                     </div>
                     <div class="w3-half" >
@@ -81,5 +72,29 @@
     </div>
 
 </body>
+
+    <script>
+        function evaluateGroup(id){
+            dataToSend = {};
+            dataToSend.team = id;
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function(){
+                if (this.readyState == 4){
+                    if(this.status == 200){
+                        window.location.replace("http://localhost:8000/evaluacion/evalAdmin/{{ stage }}/{{ course }}/{{ section }}/{{ semester_code }}/{{ year }}/" + id.toString());
+                    }
+                    else{
+                        alert("Falló la creación de la evaluación. Por favor intente nuevamente.")
+                    }
+
+                }
+            };
+            xhttp.open('POST', '/evaluacion/postEvalAdmin/{{ stage }}/{{ course }}/{{ section }}/{{ semester_code }}/{{ year }}/{{ team_id }}', true);
+            xhttp.setRequestHeader('Content-Type', 'text/plain; charset="utf-8"');
+            xhttp.send(JSON.stringify(dataToSend));
+        }
+
+
+    </script>
 
 {% endblock content %}
