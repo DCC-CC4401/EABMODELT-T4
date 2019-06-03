@@ -14,6 +14,9 @@ def seeRubric(request, rubric_id):
     data = {
         "title": rubric.name,
         "table_data": data["rubric"],
+        "status": ("completa" if rubric.completed else "incompleta"),
+        "min_presentation_time": rubric.min_presentation_time / 60.0,
+        "max_presentation_time": rubric.max_presentation_time / 60.0
     }
     return render(request, 'rubrica/ver.html', context=data)
 
@@ -35,8 +38,10 @@ def createRubric(request):
 
     # empty initial table
     data = {
-        "title": "Título",
-        "table_data": [["aspecto-tag", "", "", "", ""], ["", "", "", "", ""]]
+        "title": "",
+        "table_data": [["aspecto-tag", "", "", "", ""], ["", "", "", "", ""]],
+        "min_presentation_time": 0,
+        "max_presentation_time": 0,
     }
     return render(request, 'rubrica/modify.html', context=data)
 
@@ -52,6 +57,8 @@ def modifyRubric(request, rubric_id):
         rubric.completed = data['completed']
         rubric.n_compliance_lvl = data['n_compliance_lvl']
         rubric.n_evaluated_aspect = data['n_evaluated_aspect']
+        rubric.min_presentation_time = data['min_presentation_time']
+        rubric.max_presentation_time = data['max_presentation_time']
         rubric.rubric = json_string
         rubric.save()
 
@@ -62,7 +69,7 @@ def modifyRubric(request, rubric_id):
     data = {
         "title": rubric.name,
         "table_data": data["rubric"],
-        "min_presentation_time": rubric.min_presentation_time/60.0,
-        "max_presentation_time": rubric.min_presentation_time/60.0
+        "min_presentation_time": rubric.min_presentation_time / 60.0,
+        "max_presentation_time": rubric.max_presentation_time / 60.0
     }
     return render(request, 'rubrica/modify.html', context=data)
