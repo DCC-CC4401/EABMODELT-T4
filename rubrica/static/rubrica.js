@@ -16,7 +16,7 @@ function json_data() {
     rubric.n_compliance_lvl = table.rows[0].cells.length;
     rubric.n_evaluated_aspect = table.rows.length - 1;
     rubric.min_presentation_time = Math.round(document.getElementById("presentation_min").value*60);
-    rubric.max_presentation_time = Math.round(document.getElementById("presentation_min").value*60);
+    rubric.max_presentation_time = Math.round(document.getElementById("presentation_max").value*60);
     rubric.rubric = json_table;
     return JSON.stringify(rubric);
 }
@@ -31,6 +31,17 @@ function lastInRow(row) {
     return -1; // empty row
 }
 
+function isValidTitle() {
+    var title = document.getElementById("rubric-title").value;
+    return title != "";
+}
+
+function isValidTimeRange() {
+    var min_time = document.getElementById("presentation_min").value;
+    var max_time = document.getElementById("presentation_max").value;
+    return !isNaN(min_time) && !isNaN(max_time) && parseFloat(min_time) < parseFloat(max_time)
+}
+
 function isValidSum() {
     var table = document.getElementById("rubric-table");
     var max_sum = 0;
@@ -40,17 +51,23 @@ function isValidSum() {
         }
         max_sum += parseFloat(table.rows[0].cells[lastInRow(row)].children[0].value)
     }
-    console.log(max_sum);
     return max_sum == 6;
 }
 
 function isValidScores() {
     var table = document.getElementById("rubric-table");
-    var current_col = table.rows[0].cells[0];
     for(var j=1, col; col = table.rows[0].cells[j]; j++) {
         if (isNaN(col.children[0].value)) {
             return false;
         }
+    }
+    return true;
+}
+
+function isValidScoreOrder() {
+    var table = document.getElementById("rubric-table");
+    var current_col = table.rows[0].cells[0];
+    for(var j=1, col; col = table.rows[0].cells[j]; j++) {
         if (parseFloat(current_col.children[0].value) > parseFloat(col.children[0].value)) {
             return false
         }
@@ -74,7 +91,7 @@ function isValidTexts() {
 }
 
 function isValidRubric() {
-    return isValidSum() && isValidScores() && isValidTexts();
+    return isValidSum() && isValidScores() && isValidScoreOrder() && isValidTexts() && isValidTitle() && isValidTimeRange();
 }
 
 function addRow() {
@@ -92,11 +109,6 @@ function addColumn() {
         var newcell = table.rows[i].insertCell(-1);
         newcell.innerHTML = "<textarea></textarea>";
     }
-}
-
-function addColumn2() {
-    var table = document.getElementById("rubric-table");
-
 }
 
 function deleteRow() {
@@ -140,7 +152,6 @@ $(function () {
             "Seguir editando": function() {
                 $(this).dialog("close");
                 location.replace("/rubrica/" + $(this).data('rubric_id') + "/modificar/");
-                // location.replace("../");
             },
             "Volver al menu": function() {
                 $(this).dialog("close");
@@ -151,7 +162,7 @@ $(function () {
 
     $('#rubric-form').submit(function (event) {
         event.preventDefault();
-
+        console.log(json_data());
         $.ajax({
             headers: {"X-CSRFToken": token},
             type: "POST",
@@ -175,13 +186,20 @@ $(function () {
     });
 
     $(document).change(function(){
-        if(!isValidScores()){
-            $("#status-rubrica").text("inválida (arreglar puntajes) ").removeClass("completed").addClass("invalid");
+        if(!isValidScores()) {
+            $("#status-rubrica").text("inválida (los puntajes son inválidos) ").removeClass("completed").addClass("invalid");
+        } else if(!isValidScoreOrder()) {
+            $("#status-rubrica").text("inválida (los puntajes deben estar ordenados) ").removeClass("completed").addClass("invalid");
         } else if(!isValidSum()){
-            $("#status-rubrica").text("inválida (arreglar suma)").removeClass("completed").addClass("invalid");
+            $("#status-rubrica").text("inválida (la rúbrica debe sumar 6 puntos)").removeClass("completed").addClass("invalid");
         } else if(!isValidTexts()) {
-            $("#status-rubrica").text("inválida (arreglar textos)").removeClass("completed").addClass("invalid");
-        } else {
+            $("#status-rubrica").text("inválida (hay campos vacíos)").removeClass("completed").addClass("invalid");
+        } else if(!isValidTitle()) {
+            $("#status-rubrica").text("inválida (el título está vacío)").removeClass("completed").addClass("invalid");
+        } else if(!isValidTimeRange()) {
+            $("#status-rubrica").text("inválida (el rango de tiempo es inválido)").removeClass("completed").addClass("invalid");
+        }
+        else {
             $("#status-rubrica").text("válida").removeClass("invalid").addClass("completed");
         }
     });
