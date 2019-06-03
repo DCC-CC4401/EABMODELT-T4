@@ -6,9 +6,7 @@ from .models import Rubric
 
 def index(request):
     created_rubrics = Rubric.objects.order_by("-updated_at")
-    rubrics = Rubric.objects.all()
-    Rubric.rubric
-    return render(request, 'rubrica/ver.html', {'rubrics': created_rubrics, 'aspectos': aspects})
+    return render(request, 'rubrica/index.html', {'rubrics': created_rubrics})
 
 def createRubric(request):
     # TODO crear contexto vacío
