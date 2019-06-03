@@ -23,10 +23,11 @@
                 </tr>
                 {% for eval in top10_eval %}
                 <tr class="w3-hover-green">
-                    <th>{{ eval.name }}</th>
+                    <th onclick="evaluation({{ eval.id }})">{{ eval.name }}</th>
                     <th>{{ eval.date }}</th>
                     <th>{{ eval.course.code }}</th>
                     <th>{{ eval.rubric.name }}</th>
+                    </a>
                 </tr>
                 {% endfor %}
                 </table>
@@ -36,5 +37,11 @@
             <p class="w3-right">Powered by <a href="https://www.w3schools.com/w3css/default.asp" title="W3.CSS" target="_blank" class="w3-hover-opacity">w3.css</a></p>
         </div>
     </div>
+
+    <script>
+    function evaluation(id) {
+        let a = window.open("{% url 'evaluacion:index' %}","_self")
+    }
+    </script>
 
 {% endblock %}

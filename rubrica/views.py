@@ -1,4 +1,6 @@
 from django.shortcuts import render, HttpResponse, get_object_or_404
+from django.template.defaultfilters import register
+
 from .models import Rubric
 
 
@@ -6,9 +8,8 @@ from .models import Rubric
 
 def index(request):
     created_rubrics = Rubric.objects.order_by("-updated_at")
-    rubrics = Rubric.objects.all()
-    Rubric.rubric
-    return render(request, 'rubrica/ver.html', {'rubrics': created_rubrics, 'aspectos': aspects})
+    return render(request, 'rubrica/ver.html', {'rubrics': created_rubrics})
+
 
 def createRubric(request):
     # TODO crear contexto vacío
@@ -16,6 +17,7 @@ def createRubric(request):
         # TODO crear/parsear json, agregar modelo a la bd, mostrar pagina de "logrado"
         pass
     return render(request, 'rubrica/crear.html', context={})
+
 
 def seeRubric(request):
     # TODO crear contexto a partir de rubric_id
@@ -29,3 +31,13 @@ def modifyRubric(request, rubric_id=0):
         # TODO crear/parsear json, agregar modelo a la bd, mostrar pagina de "logrado"
         pass
     return render(request, 'rubrica/ver.html', context={})
+
+
+@register.filter(name='split')
+def split(value, arg):
+    return value.split(arg)
+
+
+@register.filter(name='clean')
+def clean(value):
+    return value.split("\', ")[0].split("\'")[-1]
