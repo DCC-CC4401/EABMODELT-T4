@@ -5,10 +5,8 @@ from evaluacion.models import *
 from eabmodel.models import *
 from users.models import *
 from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseForbidden
-from django.utils import timezone
 import json
 
-# Create your views here.
 
 @login_required
 def index(request):
@@ -60,17 +58,7 @@ def openEval(request, name, course, section, semester, year, team):
         except(ValueError, KeyError, TypeError):
             print("Error en Formato de Rúbrica")
             return HttpResponseBadRequest("Error en Formato de Rúbrica")
-        rubrica = []
-        i = 0
-        for a in parsedRub:
-            i += 1
-            pointsList = []
-            for points, text in a.items():
-                if points == 'Aspecto':
-                    pass
-                else:
-                    pointsList.append([float(points), text])
-            rubrica.append([i, a['Aspecto'], pointsList])
+        rubrica = getRubrica2(parsedRub)
         context = dict()
         context['team'] = equipo.name
         context['stage'] = evalActual.name
@@ -85,7 +73,7 @@ def openEval(request, name, course, section, semester, year, team):
         return render(request, 'evaluacion/evaluacion.html', context=context)
 
 @csrf_exempt
-@login_required
+@user_passes_test(lambda u: u.is_superuser)
 def openEvalAdmin(request, name, course, section, semester, year, team):
     semester_name = getSemester(semester)
     if request.method == 'POST':
@@ -96,8 +84,9 @@ def openEvalAdmin(request, name, course, section, semester, year, team):
         course_obj = get_object_or_404(Course, code=course, section=section, year=year, semester=semester_name)
         evaluation = get_object_or_404(Evaluation, name=name, course=course_obj)
         team_evaluated = get_object_or_404(Team, id=team)
-        evaluator = get_object_or_404(EvaluatorUser, id=1)
         teamEval = get_object_or_404(TeamEvaluation, team=team_evaluated, evaluation=evaluation)
+        for pres in presenters:
+            teamEval.presenter.add(Student.objects.get(id=pres[1]))
         gDetail = dict()
         grade = 1
         for ac in gdet:
@@ -105,8 +94,6 @@ def openEvalAdmin(request, name, course, section, semester, year, team):
             grade += ac[2]
         discs = encodeDiscount(evaluation.rubric.max_presentation_time, evaluation.rubric.min_presentation_time,
                                getSeconds(data['time']))
-        print(gdet)
-        print(gDetail)
         gDetail['Time'] = discs[0]
         gDetail['Type'] = discs[1]
         TeamEvaluationGrade.objects.create(submitted_at=data['submitted_at'],
@@ -130,17 +117,7 @@ def openEvalAdmin(request, name, course, section, semester, year, team):
         except(ValueError, KeyError, TypeError):
             print("Error en Formato de Rúbrica")
             return HttpResponseBadRequest("Error en Formato de Rúbrica")
-        rubrica = []
-        i = 0
-        for a in parsedRub:
-            i += 1
-            pointsList = []
-            for points, text in a.items():
-                if points == 'Aspecto':
-                    pass
-                else:
-                    pointsList.append([float(points), text])
-            rubrica.append([i, a['Aspecto'], pointsList])
+        rubrica = getRubrica2(parsedRub)
         alreadyPresented = []
         presenting_group = []
         for ev in TeamEvaluation.objects.filter(team=equipo):
@@ -178,7 +155,7 @@ def postEval(request, name, course, section, semester, year, team):
     teamEvaluation = get_object_or_404(TeamEvaluation, team=teamEvaluated, evaluation=evaluation)
     evaluator = get_object_or_404(EvaluatorUser, id=1)
     gradeByEval = get_object_or_404(TeamEvaluationGrade, team_evaluation=teamEvaluation, evaluator=evaluator)
-    parsedRub = getRubrica(evaluation)
+    parsedRub = getRubrica2(json.loads(evaluation.rubric.rubric))
     accomplishment = getAccomplishment(json.loads(gradeByEval.grade_detail), parsedRub)
     return render(request, 'evaluacion/postevaluacion.html', context={"scores": accomplishment,
                                                                       "stage": name,
@@ -210,7 +187,7 @@ def postEvalAdmin(request, name, course, section, semester, year, team):
         teamEvaluation = get_object_or_404(TeamEvaluation, team=teamEvaluated, evaluation=evaluation)
         evaluator = get_object_or_404(EvaluatorUser, id=1)
         gradeByEval = get_object_or_404(TeamEvaluationGrade, team_evaluation=teamEvaluation, evaluator=evaluator)
-        parsedRub = getRubrica(evaluation)
+        parsedRub = getRubrica2(json.loads(evaluation.rubric.rubric))
         detail = json.loads(gradeByEval.grade_detail)
         accomplishment = getAccomplishment(detail, parsedRub)
         courseTeams = Team.objects.filter(course=actualCourse, active=True)
@@ -310,4 +287,25 @@ def encodeDiscount(max,min,time):
         return [time-max, "Mayor"]
     else:
         return ["OK", "OK"]
+
+
+def getRubrica2(rub):
+    levels = rub[0]
+    rubric = []
+    i = 0
+    for asp in rub:
+        if i == 0:
+            pass
+        else:
+            pointsList = []
+            j = 0
+            while j < len(asp):
+                if j == 0:
+                    pass
+                else:
+                    pointsList.append([float(levels[j]), asp[j]])
+                j += 1
+            rubric.append([i, asp[0], pointsList])
+        i += 1
+    return rubric
 
