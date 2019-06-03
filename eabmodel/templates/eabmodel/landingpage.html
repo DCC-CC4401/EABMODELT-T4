@@ -1,0 +1,70 @@
+{% extends 'eabmodel/base.html' %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+  <!-- !PAGE CONTENT! -->
+  <div class="w3-main" style="margin-left:340px;margin-right:40px">
+
+        <!-- Portada -->
+        <div class="w3-container" id="portada" style="margin-top:50px; margin-bottom:10px">
+            <h1 class="w3-xxxlarge w3-text-red"><b>Bienvenido al sistema de evaluación</b></h1>
+            <hr style="width:50px;border:5px solid red" class="w3-round">
+            <p><h3>Seleccione alguna sección para comenzar</h3></p>
+            <i class="far fa-arrow-alt-circle-left" style="font-size:300%"></i>
+            <br style="height:50px">
+            <h2 class="w3-right w3-xxlarge w3-text-red" style="margin-bottom:10px"><b>Últimas evaluaciones</b></h2>
+            <table class="w3-table w3-striped w3-hoverable">
+                <tr class="w3-red">
+                    <th>Evaluación</th> <th>Fecha</th> <th>Curso</th> <th>Rúbrica</th>
+                </tr>
+                {% for eval in top10_eval %}
+                <tr class="w3-hover-green">
+                    <th onclick="evaluation({{ eval.id }})">{{ eval.name }}</th>
+                    <th>{{ eval.date }}</th>
+                    <th>{{ eval.course.code }}</th>
+                    <th>{{ eval.rubric.name }}</th>
+                    </a>
+                </tr>
+                {% endfor %}
+                </table>
+        </div>
+
+{% comment %}
+  <!-- Contact Section -->
+  <!-- W3.CSS Container -->
+  <div class="w3-light-grey w3-container w3-padding-16" style="margin-top:50px;padding-right:58px">
+    <div class="bottom" id="contact" style="margin-top:50px">
+      <h1 class="w3-xxlarge w3-text-red"><b>Contacto.</b ></h1>
+      <hr style="width:50px;border:5px solid red" class="w3-round">
+      <p>¿Dudas? ¿Sugerencias? ¿Reclamos?</p>
+        <p>No dude en contactarnos</p>
+      <form action="/action_page.php" target="_blank">
+        <div class="w3-section">
+          <label>Nombre</label>
+          <input class="w3-input w3-border" type="text" name="Name" required>
+        </div>
+        <div class="w3-section">
+          <label>Email</label>
+          <input class="w3-input w3-border" type="text" name="Email" required>
+        </div>
+        <div class="w3-section">
+          <label>Mensaje</label>
+          <input class="w3-input w3-border" type="text" name="Message" required>
+        </div>
+        <button type="submit" class="w3-button w3-red w3-margin-bottom">Enviar</button>
+      </form> 
+    </div>#}
+  {# </div> #}
+  </div>
+
+
+  {% endcomment %}
+    <script>
+    function evaluation(id) {
+        let a = window.open("{% url 'evaluacion:index' %}","_self")
+    }
+    </script>
+
+{% endblock %}

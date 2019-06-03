@@ -1,0 +1,56 @@
+{% extends 'eabmodel/base.html' %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+
+    <!-- !PAGE CONTENT! -->
+    <div class="w3-main" style="margin-left:340px;margin-right:40px">
+
+      <!-- Portada -->
+      <div class="w3-container" id="portada" style="margin-top:80px; margin-bottom:10px">
+        <h1 class="w3-xxxlarge w3-text-red"><b>Evaluaciones</b></h1>
+        <hr style="width:50px;border:5px solid red" class="w3-round">
+      </div>
+
+    <div class="w3-container">
+      <button class="w3-button w3-large w3-red w3-right w3-round">Agregar nueva evaluación</button><br>
+    </div>
+    <!--Seccion rubricas-->
+
+    {% for evaluation in evaluations %}
+        <div>
+          <button onclick="toggle({{ evaluation.id }})" class="w3-btn w3-red w3-block w3-margin" style="width: 75%">
+            <h3>{{ evaluation.name }}</h3>
+          </button>
+            <div id="{{ evaluation.id }}" class="w3-hide w3-container w3-pale-red w3-center w3-padding-large w3-margin" style="width: 75%">
+              <p>
+                <li>Curso: -{{ evaluation.course.name }}</li>
+                <li>Duración: -{{ evaluation.presentation_time }}</li>
+                <button onclick="rubric({{ evaluation.rubric.id }})" class="w3-button w3-white w3-border w3-border-red w3-round-large">{{ evaluation.rubric.name }}</button>
+                <button class="w3-button w3-white w3-border w3-border-red w3-round-large">Exportar puntajes</button><br>
+              </p>
+              <button class="w3-button w3-large w3-margin-right w3-red w3-left w3-round">Ver</button>
+              <button class="w3-button w3-large w3-red w3-left w3-round">Modificar</button>
+              <button class="w3-button w3-large w3-red w3-right w3-round">Eliminar</button>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+
+    <script>
+    function toggle(name) {
+      let x = document.getElementById(name);
+      if (x.className.indexOf("w3-show") == -1) {
+        x.className += " w3-show";
+      } else {
+          x.className = x.className.replace(" w3-show", "");
+      }
+    }
+    function rubric(id) {
+      window.open("{% url 'rubrica:index' %}", "_self");
+    }
+    </script>
+
+{% endblock %}

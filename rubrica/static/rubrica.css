@@ -1,0 +1,28 @@
+
+
+.rubric-title {
+    margin: 2%;
+}
+
+.rubric-title[readonly]{
+    border: none;
+    background: transparent;
+}
+#status {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+#status-rubrica {
+    font-size: 15px;
+    font-weight: bold;
+}
+
+#status-rubrica.completed {
+    color: green;
+}
+
+#status-rubrica.invalid {
+    color: red;
+}
+

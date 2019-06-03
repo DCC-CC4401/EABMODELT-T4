@@ -1,0 +1,165 @@
+{% extends 'eabmodel/base.html' %}
+{% load widget_tweaks %}
+{% block head %}
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+  <style>
+    table {
+    border-collapse: collapse;
+    }
+
+    table, th, td {
+      border: 1px solid black;
+      text-align: left;
+      padding: 3px;
+    }
+
+    #eliminar-msg {
+      padding: 50px 0 50px 0;
+    }
+  </style>
+{% endblock %}
+
+
+
+{% block content %}
+  <!-- !PAGE CONTENT! -->
+  <div class="w3-main" style="margin-left:340px;margin-right:40px">
+
+  <!-- Portada -->
+  <div class="w3-container" id="portada" style="margin-top:80px; margin-bottom:10px">
+    <h1 class="w3-xxxlarge w3-text-red"><b>Cursos</b></h1>
+    <hr style="width:50px;border:5px solid red" class="w3-round">
+    <p><h3>Seleccione un curso</h3></p></h2>
+  </div>
+
+
+  <!-- Caja de Cursos -->
+  <div class="w3-row-padding w3-center w3-margin-top">
+
+
+    <!--Caja de agregar-->
+    <div class="w3-quarter w3-margin-top">
+      <button onclick="document.getElementById('agregar').style.display='block'" class="w3-card w3-container w3-hover-shadow w3-light-gray" style="max-height:380px;min-height: 317px; width:200px">
+        <h3 style="top: 0px">Agregar curso nuevo</h3><br><i class="fas fa-plus" style="font-size:100px"> </i>
+      </button>
+    </div>
+
+    {%  for course in course_list %}
+      <!--Caja Ejemplo -->
+
+      <div id="{{ course.id }}"  class="w3-quarter w3-margin-top">
+        <button onclick="document.getElementById('gestionar').style.display='block'" class="w3-card w3-container w3-hover-shadow w3-light-gray" style="max-height:380px;min-height: 317px; width:200px">
+          <h3><span id="{{ course.id }}-name">{{ course.name }} </span></h3> <br> <i class="fas fa-book" style="font-size:100px"></i>
+          <p> <span id="{{ course.id }}-code"> {{ course.code }}-{{ course.section }} </span> </p>
+          <p> <span id="{{ course.id }}-year">{{ course.year }} </span>  <span id="{{ course.id }}-semester">{{ course.semester }} </span> </p>
+          <button class="w3-btn w3-red">Modificar</button>
+          <button class="w3-btn w3-red" onclick="removeCourseConfirmation(event)"> Eliminar</button>
+        </button>
+      </div>
+
+    {% endfor %}
+
+
+    <!--Agregar -->
+    <div id="agregar" class="w3-modal" {% if form_msg %} style="display:block !important {% endif %}">
+      <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:600px">
+        <div class="w3-center">
+          <br>
+          <span onclick="document.getElementById('agregar').style.display='none'" class="w3-button w3-xlarge w3-transparent w3-display-topright" title="Close Modal">×</span>
+            <form class="w3-container" action="{% url 'main:add_course' %}" method='post'>
+              {% csrf_token %}
+{#              {{ form.as_ul }}#}
+              <div class="w3-section">
+
+                {{ form.non_field_errors }}
+                {{ form.name.errors }}
+                <label for="{{ form.name.id_for_label }}"><b>Nombre Curso:</b></label>
+                {% render_field form.name class+="w3-input w3-border w3-margin-bottom" placeholder=form.name.label %}
+                {#                {{ form.name }}#}
+
+                {{ form.code.errors }}
+                <label for="{{ form.code.id_for_label }}"><b>Código:</b></label>
+{#                {{ form.code }}#}
+                {% render_field form.code class+="w3-input w3-border w3-margin-bottom" placeholder=form.code.label %}
+                {{ form.section.errors }}
+
+                <label for="{{ form.section.id_for_label }}"><b> Sección </b></label>
+{#                {{ form.section}}#}
+                  {% render_field form.section class+="w3-input w3-border w3-margin-bottom" placeholder=form.section.label %}
+
+                {{ form.year.errors }}
+                <label for="{{ form.year.id_for_label }}"><b>Año</b></label>
+{#                {{ form.year}}#}
+                  {% render_field form.year class+="w3-input w3-border w3-margin-bottom"%}
+
+                {{ form.semester.errors }}
+                <label for="{{ form.semester.id_for_label }}"><b>Semestre</b></label>
+{#                {{ form.semester}}#}
+                  {% render_field form.semester class+="w3-input w3-border w3-margin-bottom"  %}
+
+              </div>
+              <input class="w3-button w3-block w3-red w3-section w3-padding"  type='submit' name='next' value="Añadir Curso +" />
+            </form>
+        </div>
+      </div>
+    </div><!-- cierra de agregar -->
+
+    <div id="eliminar" class="w3-modal">
+      <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:600px; min-height: 400px">
+        <div id="eliminar-msg" class="w3-center">
+          <span onclick="document.getElementById('eliminar').style.display='none'" class="w3-button w3-xlarge w3-transparent w3-display-topright" title="Close Modal">×</span>
+            <h5 id="eliminar-text"></h5>
+            <table style="margin:auto">
+              <tr>
+                <td>Nombre:</td>
+                <td><span id="eliminar-text-name"></span></td>
+              </tr>
+              <tr>
+                <td>Código:</td>
+                <td><span id="eliminar-text-code"></span></td>
+              </tr>
+              <tr>
+                <td>Año:</td>
+                <td><span id="eliminar-text-year"></span></td>
+              </tr>
+              <tr>
+                <td>Semestre:</td>
+                <td><span id="eliminar-text-semester"></span></td>
+              </tr>
+            </table>
+            <form class="w3-container" action="{% url 'main:remove_course' %}" method='post'>
+                {% csrf_token %}
+                <label for="id_id" type="hidden"></label>
+                <input type="hidden" id="id_id" name="id" value="0">
+
+            <input class="w3-button w3-red" style="margin:20px auto 0 auto" type='submit' name='next' value="Eliminar" />
+            </form>
+        </div>
+      </div>
+    </div> <!-- cierre de eliminar curso -->
+
+  </div><!--cierre de cajas de cursos-->
+  </div>
+
+{% endblock %}
+
+
+{% block footer %}
+
+  <script>
+    function removeCourseConfirmation(e){
+      let id = e.target.parentNode.id;
+      $('#id_id').val(id);
+      let name = $('#'+id+'-name').text();
+      $('#eliminar-text-name').text(name);
+      $('#eliminar-text-code').text($('#'+id+'-code').text());
+      $('#eliminar-text-year').text($('#'+id+'-year').text());
+      $('#eliminar-text-semester').text($('#'+id+'-semester').text());
+      $('#eliminar-text').text( "Seguro deseas eliminar el curso " + name + "?");
+      $('#eliminar').attr('style', 'display: block');;
+      }
+
+
+  </script>
+
+{% endblock %}
