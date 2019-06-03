@@ -20,8 +20,9 @@ class EvaluatorUserRemoveForm(forms.Form):
     id = forms.IntegerField()
 
 
-# class EvaluatorUserChangeForm(UserChangeForm):
-#
+class EvaluatorUserChangeForm(EvaluatorUserCreationForm):
+    pass
+
 #     class Meta:
 #         model = EvaluatorUser
 #         fields = ('first_name', 'last_name', 'email')

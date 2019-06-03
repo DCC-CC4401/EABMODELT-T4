@@ -22,3 +22,7 @@ class CourseForm(forms.ModelForm):
 
 class RemoveCourseForm(forms.Form):
     id = forms.IntegerField()
+
+
+class ModifyCourseForm(CourseForm):
+    pass

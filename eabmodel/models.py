@@ -2,10 +2,10 @@ from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.translation import ugettext_lazy as _
 
+from users.models import EvaluatorUser
+
 
 # Create your models here.
-
-
 class Course(models.Model):
     code = models.CharField('código', max_length=7, help_text=_('código del curso'))
     name = models.CharField('nombre', max_length=150, help_text=_('nombre del curso'))
@@ -21,6 +21,8 @@ class Course(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    evaluators = models.ManyToManyField(EvaluatorUser, blank=True)
 
     class Meta:
         unique_together = ["code", "section", "year", "semester"]
@@ -52,7 +54,7 @@ class Team(models.Model):
 
 class StudentAtTeam(models.Model):
     join_date = models.DateTimeField(auto_now_add=True)
-    left_date = models.DateTimeField()
+    left_date = models.DateTimeField(blank=True, null=True)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     active = models.BooleanField(default=True)

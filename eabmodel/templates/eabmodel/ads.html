@@ -1,0 +1,36 @@
+    <div id="modify" class="w3-modal" {% if modify_form.errors %} style="display:block !important {% endif %}">
+      <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:600px">
+        <div class="w3-center">
+          <br>
+          <span onclick="document.getElementById('modify').style.display='none'" class="w3-button w3-xlarge w3-transparent w3-display-topright" title="Close Modal">×</span>
+            <form class="w3-container" id="modificar-form" action="{% url 'main:modify_course' %}" method='post'>
+              {% csrf_token %}
+{#              {{ form.as_ul }}#}
+              <div class="w3-section">
+                {{ modify_form.non_field_errors }}
+                {{ modify_form.name.errors }}
+                <label for="{{ modify_form.name.id_for_label }}"><b>Nombre Curso:</b></label>
+                {% render_field modify_form.name class+="w3-input w3-border w3-margin-bottom" placeholder=modify_form.name.label %}
+                {#                {{ form.name }}#}
+                {{ form.code.errors }}
+                <label for="{{ form.code.id_for_label }}"><b>Código:</b></label>
+{#                {{ form.code }}#}
+                {% render_field modify_form.code class+="w3-input w3-border w3-margin-bottom" placeholder=modify_form.code.label %}
+                {{ modify_form.section.errors }}
+                <label for="{{ modify_form.section.id_for_label }}"><b> Sección </b></label>
+{#                {{ form.section}}#}
+                  {% render_field modify_form.section class+="w3-input w3-border w3-margin-bottom" placeholder=modify_form.section.label %}
+                {{ modify_form.year.errors }}
+                <label for="{{ modify_form.year.id_for_label }}"><b>Año</b></label>
+{#                {{ form.year}}#}
+                  {% render_field modify_form.year class+="w3-input w3-border w3-margin-bottom"%}
+                {{ modify_form.semester.errors }}
+                <label for="{{ modify_form.semester.id_for_label }}"><b>Semestre</b></label>
+{#                {{ form.semester}}#}
+                  {% render_field modify_form.semester class+="w3-input w3-border w3-margin-bottom"  %}
+              </div>
+              <input class="w3-button w3-block w3-red w3-section w3-padding"  type='submit' name='next' value="Modificar Curso +" />
+            </form>
+        </div>
+      </div>
+    </div><!-- cierra de modificar -->
