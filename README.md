@@ -1,8 +1,8 @@
 ##Proyecto Ingeniería de Software I: 
 ###Sistema de Evaluación de Presentaciones
 
-Grupo: Equipo Alfa Buena Maravilla Onda Dinamita Escuadron Lobo (EABMODEL)
+Grupo 12: Equipo Alfa Buena Maravilla Onda Dinamita Escuadron Lobo (EABMODEL)
 
-Integrantes: 
+Integrantes:
 
 Diseño interfaz por lambda ideas.
