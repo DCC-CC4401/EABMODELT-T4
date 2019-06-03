@@ -7,12 +7,12 @@ from users.models import *
 from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseForbidden
 from django.utils import timezone
 import json
-
 # Create your views here.
 
 @login_required
 def index(request):
-    return render(request, 'evaluacion/index.html', context={})
+    evaluations = Evaluation.objects.all()
+    return render(request, 'evaluacion/index.html', {'evaluations': evaluations})
 
 @csrf_exempt
 @login_required

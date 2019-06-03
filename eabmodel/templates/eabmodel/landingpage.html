@@ -21,10 +21,11 @@
                 </tr>
                 {% for eval in top10_eval %}
                 <tr class="w3-hover-green">
-                    <th>{{ eval.name }}</th>
+                    <th onclick="evaluation({{ eval.id }})">{{ eval.name }}</th>
                     <th>{{ eval.date }}</th>
                     <th>{{ eval.course.code }}</th>
                     <th>{{ eval.rubric.name }}</th>
+                    </a>
                 </tr>
                 {% endfor %}
                 </table>
@@ -58,5 +59,12 @@
   {# </div> #}
   </div>
 
+
   {% endcomment %}
+    <script>
+    function evaluation(id) {
+        let a = window.open("{% url 'evaluacion:index' %}","_self")
+    }
+    </script>
+
 {% endblock %}
