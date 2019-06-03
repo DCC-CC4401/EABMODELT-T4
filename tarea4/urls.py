@@ -13,14 +13,23 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
+import tarea4.settings as settings
 from django.contrib import admin
 from django.urls import include, path
+# from django.contrib.auth.views import LoginView
+
 
 urlpatterns = [
     path('contact/', include('contact.urls', namespace='contact')),
     path('rubrica/', include('rubrica.urls', namespace='rubrica')),
     path('evaluacion/', include('evaluacion.urls', namespace='evaluacion')),
     path('', include('eabmodel.urls', namespace='main')),
-    path('admin/', admin.site.urls),
-
+    path('accounts/', include('django.contrib.auth.urls')),
+    # path('login', name='login')
 ]
+
+if settings.ADMIN_ENABLED:
+    urlpatterns += [
+        path('admin/', admin.site.urls),
+    ]

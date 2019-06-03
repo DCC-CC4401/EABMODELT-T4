@@ -9,7 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 class Course(models.Model):
     code = models.CharField('código', max_length=7, help_text=_('código del curso'))
     name = models.CharField('nombre', max_length=150, help_text=_('nombre del curso'))
-    section = models.PositiveSmallIntegerField('sección', default=1, help_text=_('sección del curso'))
+    section = models.PositiveSmallIntegerField('sección', default=1, help_text=_('sección del curso'), validators=[MinValueValidator(1), MaxValueValidator(30)])
     year = models.PositiveSmallIntegerField('año', default=2019, help_text=_('año que se dicta el curso'))
 
     SEMESTER_CHOICES = (
@@ -51,7 +51,6 @@ class Team(models.Model):
 
 
 class StudentAtTeam(models.Model):
-
     join_date = models.DateTimeField(auto_now_add=True)
     left_date = models.DateTimeField()
     student = models.ForeignKey(Student, on_delete=models.CASCADE)

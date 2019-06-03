@@ -1,13 +1,9 @@
 from django.db import models
 
-# Create your models here.
-
-
 class Rubric(models.Model):
     name = models.CharField(max_length=255)
-
-    suggested_presentation_time = models.TimeField()
-
+    min_presentation_time = models.PositiveSmallIntegerField()  # en segundos
+    max_presentation_time = models.PositiveSmallIntegerField()  # en segundos
     n_compliance_lvl = models.PositiveSmallIntegerField()
     n_evaluated_aspect = models.PositiveSmallIntegerField()
     rubric = models.TextField()
@@ -15,5 +11,3 @@ class Rubric(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-    #rubrica
