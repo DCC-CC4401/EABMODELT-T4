@@ -25,14 +25,16 @@ def landingpage(request):
 
 @login_required
 def courses(request, extra_context={}):
-    if not request.user.is_admin:
-        return HttpResponseNotFound('Sorry')
+    context = {'is_admin': False}
 
-    form = CourseForm()
-    course_list = Course.objects.all().order_by('updated_at', 'created_at').reverse()
-    context = {'course_list': course_list,
-               'form': form,
-               }
+    if not request.user.is_admin:
+        course_list = Course.objects.all().filter(evaluators=request.user).order_by('updated_at', 'created_at').reverse()
+    else:
+        form = CourseForm()
+        course_list = Course.objects.all().order_by('updated_at', 'created_at').reverse()
+        context.update({'form': form, 'is_admin': True})
+
+    context.update({'course_list': course_list})
 
     context.update(extra_context)
     return render(request, 'eabmodel/course.html', context)

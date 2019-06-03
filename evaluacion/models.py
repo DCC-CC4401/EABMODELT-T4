@@ -16,7 +16,7 @@ class Evaluation(models.Model):
     course = models.ForeignKey(Course, on_delete=models.PROTECT)
     rubric = models.ForeignKey(Rubric, on_delete=models.PROTECT)
     presentation_time = models.TimeField()
-    evaluators = models.ManyToManyField(EvaluatorUser)
+    evaluators = models.ManyToManyField(EvaluatorUser, blank=True, null=True)
     is_active = models.BooleanField(default=False)
 
     class Meta:
