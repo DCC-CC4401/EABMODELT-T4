@@ -1,24 +1,17 @@
 function json_data() {
     var rubric = {};
     rubric.name = document.getElementById("rubric-title").value;
-    rubric.suggested_presentation_time = Date.now();
     rubric.completed = isValidRubric();
 
     var json_table = [];
     var table = document.getElementById("rubric-table");
 
-    for(var i=1, row; row = table.rows[i]; i++) {
-        var row_to_append = {};
+    for(var i=0, row; row = table.rows[i]; i++) {
+        var row_to_append = [];
         for(var j=0, col; col = row.cells[j]; j++) {
-            if (j == 0) {
-                row_to_append.aspecto = col.children[0].value;
-            } else {
-                row_to_append[table.rows[0].cells[j].children[0].value] = col.children[0].value;
-            }
+            row_to_append.push(col.children[0].value);
         }
-        if (!jQuery.isEmptyObject(row_to_append)) {
-            json_table.push(row_to_append);
-        }
+        json_table.push(row_to_append);
     }
     rubric.n_compliance_lvl = table.rows[0].cells.length;
     rubric.n_evaluated_aspect = table.rows.length - 1;
@@ -177,7 +170,7 @@ $(function () {
         //return false;
     });
 
-    $("textarea").change(function(){
+    $(document).change(function(){
         if(!isValidScores()){
             $("#status-rubrica").text("inválida (arreglar puntajes) ").removeClass("completed").addClass("invalid");
         } else if(!isValidSum()){

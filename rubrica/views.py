@@ -1,6 +1,5 @@
 from django.shortcuts import render, HttpResponse, get_object_or_404
 from .models import Rubric
-from rubrica.utils import rubric_to_table
 import json
 
 
@@ -14,7 +13,7 @@ def seeRubric(request, rubric_id):
 
     data = {
         "title": rubric.name,
-        "table_data": rubric_to_table(data["rubric"]),
+        "table_data": data["rubric"],
     }
     return render(request, 'rubrica/ver.html', context=data)
 
@@ -32,8 +31,6 @@ def createRubric(request):
             max_presentation_time=data['max_presentation_time'],
             rubric=json_string
         )
-        print(new_rubric.id)
-        print(json_string)
         return HttpResponse(new_rubric.id)
 
     # empty initial table
@@ -56,7 +53,6 @@ def modifyRubric(request, rubric_id):
         rubric.n_compliance_lvl = data['n_compliance_lvl']
         rubric.n_evaluated_aspect = data['n_evaluated_aspect']
         rubric.rubric = json_string
-        print(json_string)
         rubric.save()
 
         return HttpResponse(rubric_id)
@@ -65,7 +61,7 @@ def modifyRubric(request, rubric_id):
     data = json.loads(rubric.rubric, encoding='uft-8')
     data = {
         "title": rubric.name,
-        "table_data": rubric_to_table(data["rubric"]),
+        "table_data": data["rubric"],
         "min_presentation_time": rubric.min_presentation_time/60.0,
         "max_presentation_time": rubric.min_presentation_time/60.0
     }

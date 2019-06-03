@@ -150,7 +150,7 @@
                     {% for row in table_data %}
                         <tr>
                             {% for cell_content in row %}
-                                {% if cell_content == "aspecto-tag" %}
+                                {% if cell_content == "aspecto-tag" or cell_content == null %}
                                     <td> <b> Aspecto\Puntaje </b> </td>
                                 {% else %}
                                     <td> <textarea>{{ cell_content }}</textarea> </td>
