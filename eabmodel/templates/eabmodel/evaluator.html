@@ -57,7 +57,7 @@
           <span id="{{ evaluator.id }}-lastname"> {{ evaluator.last_name}}</span> </h3>
           <i class="fas fa-user-alt" style="font-size:100px"></i>
           <p class="ellipsis" style="text-overflow: ellipsis; width:100%; overflow: hidden; white-space: nowrap;"> <span  id="{{ evaluator.id }}-email">{{ evaluator.email}} </span> </p>
-          <button class="w3-btn w3-red">Modificar</button>
+          <button class="w3-btn w3-red" onclick="modificarEvaluator(event)"">Modificar</button>
           <button class="w3-btn w3-red" onclick="removeEvaluatorConfirmation(event)"> Eliminar </button>
         </button>
       </div>
@@ -94,6 +94,47 @@
       </div>
     </div><!-- cierra de agregar -->
 
+
+      <!--modificar-->
+      <div id="modificar" class="w3-modal" {% if modify_form.errors %} style="display:block !important" {% endif %}>
+      <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:600px">
+        <div class="w3-center">
+          <br>
+          <span onclick="document.getElementById('modificar').style.display='none'" class="w3-button w3-xlarge w3-transparent w3-display-topright" title="Close Modal">×</span>
+            <h2>Modificar Evaluador</h2>
+
+            <form id="modificar-form" class="w3-container" action="{% url 'main:modify_eval' %}" method='post'>
+              {% csrf_token %}
+{#              {{ form.as_ul }}#}
+              <div class="w3-section">
+                {{ modify_form.non_field_errors }}
+                {{ modify_form.first_name.errors }}
+
+                <label for="{{ modify_form.first_name.id_for_label }}"><b>Nombre:</b></label>
+                {% render_field modify_form.first_name class+="w3-input w3-border w3-margin-bottom" placeholder=modify_form.first_name.label %}
+
+
+                {{ modify_form.last_name.errors }}
+                <label for="{{ form.last_name.id_for_label }}"><b>Apellido:</b></label>
+                {% render_field modify_form.last_name class+="w3-input w3-border w3-margin-bottom" placeholder=modify_form.last_name.label %}
+
+
+                {{ modify_form.email.errors }}
+                <label for="{{ modify_form.email.id_for_label }}"><b>Email:</b></label>
+                  {% render_field modify_form.email class+="w3-input w3-border w3-margin-bottom" placeholder=modify_form.email.label %}
+
+              </div>
+              <input class="w3-button w3-block w3-red w3-section w3-padding"  type='submit' name='next' value="Modificar Evaluador" />
+            </form>
+        </div>
+      </div>
+    </div><!-- cierra de modificar -->
+
+
+
+
+
+
     <div id="eliminar" class="w3-modal">
       <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:600px; min-height: 400px">
         <div id="eliminar-msg" class="w3-center">
@@ -123,6 +164,12 @@
         </div>
       </div>
     </div> <!-- cierre de eliminar Evaluador -->
+
+
+
+
+
+
 
 
     {% if added_msg %}
@@ -186,6 +233,24 @@
       $('#eliminar').attr('style', 'display: block');
 
     }
+
+
+      function  modificarEvaluator(e) {
+        let id = e.target.parentNode.id;
+
+        $('#id_id').val(id);
+        let first_name = $('#'+id+'-firstname').text();
+        let last_name = $('#'+id+'-lastname').text();
+        let email = $('#'+id+'-email').text().replace(" ", "");
+
+        $('#modificar-form').attr("action", "{% url 'main:modify_eval' %}/"+id);
+        $('#id_modificar-first_name').val(first_name);
+        $('#id_modificar-last_name').val(last_name);
+        $('#id_modificar-email').val(email);
+        $('#modificar').attr('style', 'display: block');
+
+        {#$('#eliminar-text').text( "Seguro deseas eliminar el curso " + name + "?");#}
+      }
 
 
   </script>

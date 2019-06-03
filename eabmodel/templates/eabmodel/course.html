@@ -98,6 +98,8 @@
         </div>
       </div>
     </div><!-- cierra de agregar -->
+
+
     <div id="modificar" class="w3-modal" {% if modify_form.errors %} style="display:block !important" {% endif %}>
       <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:600px">
         <div class="w3-center">
@@ -114,7 +116,7 @@
                 <label for="{{ modify_form.name.id_for_label }}"><b>Nombre Curso:</b></label>
                 {% render_field modify_form.name class+="w3-input w3-border w3-margin-bottom" placeholder=modify_form.name.label %}
                 {#                {{ form.name }}#}
-                {{ form.code.errors }}
+                {{ modify_form.code.errors }}
                 <label for="{{ form.code.id_for_label }}"><b>Código:</b></label>
 {#                {{ form.code }}#}
                 {% render_field modify_form.code class+="w3-input w3-border w3-margin-bottom" placeholder=modify_form.code.label %}
@@ -267,13 +269,9 @@
         $('#id_modificar-name').val(name);
         $('#id_modificar-code').val(c);
         $('#id_modificar-section').val(s);
-
         $('#id_modificar-year').val($('#'+id+'-year').text().replace(" ",""));
         $('#id_modificar-semester').val($('#'+id+'-semester').text().replace(" ",""));
-
         $('#modificar').attr('style', 'display: block');
-
-
 
         {#$('#eliminar-text').text( "Seguro deseas eliminar el curso " + name + "?");#}
       }

@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.http import HttpResponseNotFound
 
 from users.models import EvaluatorUser
-from users.forms import EvaluatorUserCreationForm, EvaluatorUserRemoveForm
+from users.forms import EvaluatorUserCreationForm, EvaluatorUserRemoveForm, EvaluatorUserChangeForm
 
 from .models import Course
 from .forms import CourseForm, RemoveCourseForm, ModifyCourseForm
@@ -113,6 +113,7 @@ def evaluators(request, extra_context={}):
 
     context = {'evaluator_list': evaluator_list,
                'form': form,
+               'modify_form': EvaluatorUserChangeForm(prefix="modificar")
                }
 
     context.update(extra_context)
@@ -149,7 +150,7 @@ def add_eval(request):
 def remove_eval(request):
 
     if not request.user.is_admin:
-        return HttpResponseNotFound('Sorry')
+        return HttpResponseNotFound("I don't know how you get here :s")
 
     if request.method == 'POST':
         form = EvaluatorUserRemoveForm(request.POST)
@@ -157,3 +158,23 @@ def remove_eval(request):
             evaluator = EvaluatorUser.objects.get(pk=form.cleaned_data['id'])
             evaluator.delete()
     return redirect(reverse('main:evaluators'))
+
+
+@login_required
+def modify_eval(request, eval=None):
+    extra_context = {}
+
+    if eval is not None:
+        if not request.user.is_admin:
+            return HttpResponseNotFound('Sorry')
+
+        if request.method == 'POST':
+            new_form = EvaluatorUserChangeForm(request.POST, instance=EvaluatorUser.objects.get(pk=eval), prefix="modificar" )
+            if new_form.is_valid():
+                new_form.save()
+            extra_context.update({'modify_form': new_form})
+
+    response = evaluators(request, extra_context)
+    return response
+
+
