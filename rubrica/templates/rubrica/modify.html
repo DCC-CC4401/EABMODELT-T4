@@ -110,6 +110,7 @@
                         cursor: pointer;
                         margin: 20px 0.5% 0.5%;
                         font-size: 15px;
+                        table-layout: fixed ;
                     }
                     textarea {
                         width: 100%;
@@ -153,7 +154,7 @@
                                 {% if cell_content == "aspecto-tag" or cell_content == null %}
                                     <td> <b> Aspecto\Puntaje </b> </td>
                                 {% else %}
-                                    <td> <textarea>{{ cell_content }}</textarea> </td>
+                                    <td> <textarea >{{ cell_content }}</textarea> </td>
                                 {% endif %}
                             {% endfor %}
                         </tr>

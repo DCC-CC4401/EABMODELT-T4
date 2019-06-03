@@ -90,9 +90,13 @@ function addColumn() {
     var table = document.getElementById("rubric-table");
     for (var i = 0; i < table.rows.length; i++) {
         var newcell = table.rows[i].insertCell(-1);
-        newcell.innerHTML = "<textarea></textarea>"
-
+        newcell.innerHTML = "<textarea></textarea>";
     }
+}
+
+function addColumn2() {
+    var table = document.getElementById("rubric-table");
+
 }
 
 function deleteRow() {
