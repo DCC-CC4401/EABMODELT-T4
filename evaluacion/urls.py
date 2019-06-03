@@ -8,6 +8,7 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('eval/<str:name>/<str:course>/<str:section>/<str:semester>/<str:year>/<str:team>', views.openEval, name='evaluacion'),
     path('evalAdmin/<str:name>/<str:course>/<str:section>/<str:semester>/<str:year>/<str:team>', views.openEvalAdmin, name='evaluacionAdmin'),
+    path('evalAdmin/<int:id>', views.openEvalAdmin2, name='evaluacionAdmin'),
     path('postEval/<str:name>/<str:course>/<str:section>/<str:semester>/<str:year>/<str:team>', views.postEval, name='postEval'),
     path('postEvalAdmin/<str:name>/<str:course>/<str:section>/<str:semester>/<str:year>/<str:team>', views.postEvalAdmin, name='postEvalAdmin'),
     path('<int:id>/addEvaluator/', views.add_evaluator_view, name='addevaluator'),

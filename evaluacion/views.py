@@ -15,6 +15,7 @@ def index(request):
 @csrf_exempt
 @login_required
 def openEval(request, name, course, section, semester, year, team):
+
     semester_name = getSemester(semester)
     if request.method == 'POST':
         json_string = request.body.decode('utf-8')
@@ -73,9 +74,12 @@ def openEval(request, name, course, section, semester, year, team):
         return render(request, 'evaluacion/evaluacion.html', context=context)
 
 @csrf_exempt
-@user_passes_test(lambda u: u.is_superuser)
+@user_passes_test(lambda u: u.is_admin)
 def openEvalAdmin(request, name, course, section, semester, year, team):
+
     semester_name = getSemester(semester)
+
+
     if request.method == 'POST':
         json_string = request.body.decode('utf-8')
         data = json.loads(json_string, encoding='utf-8')
@@ -103,9 +107,11 @@ def openEvalAdmin(request, name, course, section, semester, year, team):
                                            grade_detail=json.dumps(gDetail),
                                            final_grade=grade)
         return JsonResponse(gDetail)
+
     else:
+
         curso = get_object_or_404(Course, code=course, section=section, semester=semester_name, year=year)
-        equipo = get_object_or_404(Team, id=team, course=curso.id)
+        equipo = get_object_or_404(Team, id=team, course_id=curso.id)
         evalActual = get_object_or_404(Evaluation, name=name, course=curso)
         if not TeamEvaluation.objects.filter(team=equipo, evaluation=evalActual).exists():
             return HttpResponseBadRequest("<div style='text-align:center'> La evaluación para este equipo aún no está"
@@ -117,9 +123,11 @@ def openEvalAdmin(request, name, course, section, semester, year, team):
         except(ValueError, KeyError, TypeError):
             print("Error en Formato de Rúbrica")
             return HttpResponseBadRequest("Error en Formato de Rúbrica")
+
         rubrica = getRubrica2(parsedRub)
         alreadyPresented = []
         presenting_group = []
+
         for ev in TeamEvaluation.objects.filter(team=equipo):
             for alumn in ev.presenter.all():
                 name = alumn.first_name + " " + alumn.last_name
@@ -145,6 +153,18 @@ def openEvalAdmin(request, name, course, section, semester, year, team):
         context['evaluators'] = [["Jocelyn Simmonds", False], ["Pablo Miranda", True]]
         return render(request, 'evaluacion/evaluacionadmin.html', context=context)
 
+
+def openEvalAdmin2(request, id):
+    a = Evaluation.objects.get(pk=id)
+    name = a.name
+
+    print(a.course)
+    course = a.course.code
+    section = a.course.section
+    semester = a.course.semester
+    year = a.course.year
+    team = 1
+    return openEvalAdmin(request, name, course, section, semester[0], year, team)
 
 @login_required
 def postEval(request, name, course, section, semester, year, team):
@@ -207,7 +227,6 @@ def postEvalAdmin(request, name, course, section, semester, year, team):
                                                                                "less_time": discount[1],
                                                                                "infraction": discount[2],
                                                                                "infraction2": discount[3]})
-
 
 def getRubrica(eval):
     try:
