@@ -42,10 +42,11 @@ INSTALLED_APPS = [
     'eabmodel.apps.EabmodelConfig',
     'evaluacion.apps.EvaluacionConfig',
     'rubrica.apps.RubricaConfig',
+    'contact.apps.ContactConfig',
     'users.apps.UsersConfig',
-
     # extra apps
     'widget_tweaks',
+
 ]
 
 if ADMIN_ENABLED is True:

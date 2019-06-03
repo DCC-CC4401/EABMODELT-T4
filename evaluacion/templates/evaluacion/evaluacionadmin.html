@@ -1,0 +1,236 @@
+{% extends "eabmodel/base.html" %}
+
+{% block subtitle %}Evaluación{% endblock %}
+
+{% block content %}
+
+<body>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+<!-- !PAGE CONTENT! -->
+<div class="w3-main" style="margin-left:340px;margin-right:40px">
+
+  <!-- Photo grid (modal) -->
+
+  <!-- Evaluacion -->
+  <div class="w3-container" id="designers" style="margin-top:50px">
+    <h1 class="w3-xxxlarge w3-text-red"><b>Evaluación <i class="w3-text-green">en curso</i> </b></h1>
+    <hr style="width:50px;border:5px solid red" class="w3-round">
+    <div class="w3-container w3-center">
+    <p><b>{{ team }}</b> Presentación {{ stage }} <i>CC4401-1/Otoño/2019</i></p>
+    <br>
+    
+    <div class="w3-panel  w3-margin-bottom">
+      <ul class="w3-ul w3-light-grey w3-center w3-card-4">
+        <li class="w3-dark-grey w3-xlarge w3-padding-32">Evaluadores <i class="fas fa-user-tie"></i> </li>
+          {% for eval in evaluators %}
+              {% if eval.1 == False %}
+                <li class="w3-padding-16">{{ eval.0 }} <button style="margin-left: 10px" class="w3-large fas fa-times"></button></li>
+              {% else %}
+                  <li class=" w3-padding-16 presentado">{{ eval.0 }} <i style="margin-left: 10px" class="far fa-check-circle"><i class="w3-small"> ya evaluó</i></i></li>
+              {% endif %}
+          {% endfor %}
+        <button class="opcion w3-padding-16" style="width: 100%"> Agregar otro <i style="margin-left: 10px" class="fas fa-user-plus"></i></button>
+      </ul>
+    </div>
+
+      <div class="w3-row-padding" style="margin-top:30px">
+        <div class="w3-half w3-margin-bottom ">
+          <ul class="w3-ul w3-light-grey w3-center w3-card-4">
+            <li class="w3-dark-grey w3-xlarge w3-padding-32">Miembros del equipo <i class="fas fa-user-friends"></i></li>
+
+              {% for student in group %}
+                  {% if student.1 %}
+                    <li class="presentado w3-padding-16">{{ student.0 }} <i class="far fa-check-circle"></i> <i class="w3-small">ya presentó</i></li>
+                  {% else %}
+                    <li class="w3-padding-16">{{ student.0 }} <button class="fas fa-plus" onclick="return addPresenter('{{ student.0 }}',{{ student.2 }})"></button></li>
+                  {% endif %}
+              {% endfor %}
+
+          </ul>
+        </div>
+            
+        <div class="w3-half w3-margin-bottom ">
+          <ul class="w3-ul w3-light-grey w3-center w3-card-4">
+            <li class="w3-dark-grey w3-xlarge w3-padding-32">Miembros que presentan <i class="fas fa-chalkboard-teacher"></i></li>
+              {% for student in group %}
+                <li class="w3-padding-16" style="display: none" id="{{ student.0 }}pres">{{ student.0 }} <button style="margin-left: 10px" class="w3-large fas fa-times" onclick="return notShow('{{ student.0 }}')"> </button> </li>
+              {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+    <p>Seleccione el nivel de logro alcanzado por el grupo en cada ámbito</p> </div>
+
+
+      {% for aspect in rubric %}
+        <div id="option{{ aspect.0 }}" class="w3-panel  w3-margin-bottom">
+          <ul class="w3-ul w3-light-grey w3-center w3-card-4">
+              <li class="w3-red w3-xlarge w3-padding-32">{{ aspect.1 }}<i class="far fa-check-circle"></i></li>
+              {% for level in aspect.2 %}
+                  <button class="opcion w3-padding-16" style="width:100%" onclick="buttonClick({{ aspect.0 }},{{ level.0 }})">{{ level.1 }}</button>
+              {% endfor %}
+          </ul>
+        </div>
+      {% endfor %}
+
+            <div class="w3-panel w3-margin-bottom w3-card-4 w3-padding-16 w3-half w3-right" style="margin-right: 1.8%">
+                <span style="margin-left:21%"><i class="far fa-clock"></i> Duración Final
+                <input id="minutes" class="w3-input w3-border w3-round" type="number" size="1" placeholder="min" style="width:18%; display:inline; margin-left: 10px"> : <input id="seconds" class="w3-input w3-border w3-round" style="width:18%; display:inline" type="number" placeholder="seg"></span>
+            </div>
+
+            <div class="w3-panel w3-right w3-half">
+                <button class="w3-button w3-xlarge w3-red" style="margin-left: 15%" onclick="validate(6)"> <i class="fas fa-envelope-open-text"></i> Entregar evaluación</button>
+            </div>
+  </div>
+  
+
+  
+
+  
+
+<!-- End page content -->
+</div>
+
+<!-- W3.CSS Container -->
+<div class="w3-light-grey w3-container w3-padding-32" style="margin-top:75px;padding-right:58px"><p class="w3-right">Powered by <a href="https://www.w3schools.com/w3css/default.asp" title="W3.CSS" target="_blank" class="w3-hover-opacity">w3.css</a></p></div>
+
+</body>
+
+    <script>
+    var presenters = [];
+    function addPresenter(name, id){
+        var student = document.getElementById(name + "pres");
+        student.style.display = "block";
+        if(! presenters.includes(name)){
+            presenters.push([name,id]);
+        }
+    }
+    function notShow(name){
+        var student = document.getElementById(name + "pres");
+        student.style.display = "none";
+        presenters = presenters.filter(function(ele){
+            return name.localeCompare(ele[0]);
+        });
+    }
+
+    var selectedOptions = [];
+    function buttonClick(param,level,decimal){
+        var lvl = level + decimal/10;
+        var text = "#option" + param.toString() + " :button";
+        $(text).click(function(){
+            $(text).css("background-color","#DDDDDD");
+            $(this).css("background-color","#31BE00");
+            addToSelec(param,$(this).text(),lvl);
+        })
+    }
+
+    function addToSelec(par,text,lvl){
+        var i = 0;
+        for(i; i < selectedOptions.length; i++){
+            if(selectedOptions[i][0] === par){
+                selectedOptions[i][1] = text;
+                selectedOptions[i][2] = lvl;
+                return;
+            }
+        }
+        selectedOptions.push([par,text,lvl]);
+    }
+
+    function validate(num){
+        if(num === selectedOptions.length){
+            var mins = document.getElementById("minutes").value;
+            var secs = document.getElementById("seconds").value;
+            if(mins.length === 0 || secs.length === 0){
+                alert("Falta especificar la duración de la presentación.");
+                return
+            }
+            mins = Number(mins);
+            secs = Number(secs);
+            if(mins < 0 || secs < 0 || secs >= 60){
+                alert("Error en formato de duración final.");
+                return
+            }
+            if(presenters.length === 0){
+                alert("No ha seleccionado presentadores.");
+                return
+            }
+            if(confirm("¿Está segur@ de que desea enviar su evaluación?")){
+                sendEval();
+            }
+        }
+        else {
+            var ready = [];
+            var notReady = [];
+            var j = 0;
+            var search;
+            var modify;
+            var text;
+            for (j; j < selectedOptions.length; j++) {
+                ready.push(selectedOptions[j][0]);
+                search = "#option" + ready[j].toString();
+                modify = $(search).find("li");
+                if (modify.hasClass("w3-orange")) {
+                    modify.removeClass("w3-orange");
+                    modify.addClass("w3-red");
+                    text = modify.contents().filter(function () {
+                        return this.nodeType == 3;
+                    })[0].nodeValue;
+                    modify.html(text + '<i class="far fa-check-circle"></i>');
+                }
+            }
+            for (j = 1; j <= num; j++) {
+                if (!ready.includes(j)) {
+                    notReady.push(j);
+                }
+            }
+            var alertOf = [];
+            for (j = 0; j < notReady.length; j++) {
+                search = "#option" + notReady[j].toString();
+                modify = $(search).find("li");
+                modify.removeClass("w3-red");
+                modify.addClass("w3-orange");
+                text = modify.contents().filter(function () {
+                    return this.nodeType == 3;
+                })[0].nodeValue;
+                alertOf.push(text);
+                modify.html(text + '<i class="fas fa-exclamation-circle"></i><i class="w3-medium"> falta seleccionar</i>');
+            }
+            var toShow = "";
+            for (j = 0; j < alertOf.length; j++) {
+                toShow = toShow + alertOf[j] + ", ";
+            }
+            alert("No haz completado los campos: " + toShow.slice(0, toShow.length - 2));
+        }
+    }
+
+
+    function sendEval(){
+        var dataToSend = {};
+        dataToSend.submitted_at = Date.now();
+        dataToSend.updated_at = Date.now();
+        dataToSend.grade_detail = JSON.stringify(selectedOptions);
+        dataToSend.comment = "";
+        dataToSend.time = document.getElementById("minutes").value + ":" + document.getElementById("seconds").value;
+        dataToSend.presenters = JSON.stringify(presenters);
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function(){
+            if (this.readyState == 4){
+                if(this.status == 200){
+                    window.location.replace("http://localhost:8000/evaluacion/postEvalAdmin/{{ stage }}/{{ course }}/{{ section }}/{{ semester_code }}/{{ year }}/{{ team_id }}");
+                }
+                else{
+                    alert("Falló el envío de su evaluación. Por favor intente nuevamente.")
+                }
+
+            }
+        };
+        xhttp.open('POST', '/evaluacion/evalAdmin/{{ stage }}/{{ course }}/{{ section }}/{{ semester_code }}/{{ year }}/{{ team_id }}', true);
+        xhttp.setRequestHeader('Content-Type', 'text/plain; charset="utf-8"');
+        xhttp.send(JSON.stringify(dataToSend));
+    }
+    </script>
+
+{% endblock content %}

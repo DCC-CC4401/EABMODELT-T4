@@ -12,11 +12,15 @@ from .forms import CourseForm, RemoveCourseForm
 
 
 # Create your views here.
+from evaluacion.models import Evaluation
+
 
 @login_required
 def landingpage(request):
-    context = {}
-    return render(request, 'eabmodel/landingpage.html', context)
+    evaluations = Evaluation.objects.order_by("-date")
+    if len(evaluations) > 10:
+        evaluations = evaluations[:10]
+    return render(request, 'eabmodel/landingpage.html', {'top10_eval': evaluations})
 
 
 @login_required
@@ -129,5 +133,3 @@ def remove_eval(request):
             evaluator = EvaluatorUser.objects.get(pk=form.cleaned_data['id'])
             evaluator.delete()
     return redirect(reverse('main:evaluators'))
-
-

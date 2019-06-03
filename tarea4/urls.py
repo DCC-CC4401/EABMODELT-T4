@@ -21,6 +21,7 @@ from django.urls import include, path
 
 
 urlpatterns = [
+    path('contact/', include('contact.urls', namespace='contact')),
     path('rubrica/', include('rubrica.urls', namespace='rubrica')),
     path('evaluacion/', include('evaluacion.urls', namespace='evaluacion')),
     path('', include('eabmodel.urls', namespace='main')),
