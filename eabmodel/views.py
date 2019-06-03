@@ -8,7 +8,7 @@ from users.models import EvaluatorUser
 from users.forms import EvaluatorUserCreationForm, EvaluatorUserRemoveForm
 
 from .models import Course
-from .forms import CourseForm, RemoveCourseForm
+from .forms import CourseForm, RemoveCourseForm, ModifyCourseForm
 
 
 # Create your views here.
@@ -29,12 +29,13 @@ def courses(request, extra_context={}):
 
     if not request.user.is_admin:
         course_list = Course.objects.all().filter(evaluators=request.user).order_by('updated_at', 'created_at').reverse()
+
     else:
-        form = CourseForm()
+        form = CourseForm(prefix='agregar')
         course_list = Course.objects.all().order_by('updated_at', 'created_at').reverse()
         context.update({'form': form, 'is_admin': True})
 
-    context.update({'course_list': course_list})
+    context.update({'course_list': course_list, 'modify_form': ModifyCourseForm(prefix="modificar")})
 
     context.update(extra_context)
     return render(request, 'eabmodel/course.html', context)
@@ -48,16 +49,37 @@ def add_course(request):
         return HttpResponseNotFound('Sorry')
 
     if request.method != 'POST':
-        form = CourseForm()
+        form = CourseForm(prefix="agregar")
+
     else:
-        form = CourseForm(request.POST)
+        form = CourseForm(request.POST, prefix="agregar")
         if form.is_valid():
             added_course = form.save()
             extra_context.update({'added_course': added_course, 'added_msg': True})
-
+# form
     extra_context.update({'form': form})
     response = courses(request, extra_context)
     return response
+
+@login_required
+def modify_course(request, course=None):
+    extra_context ={}
+
+    if course is not None:
+        if not request.user.is_admin:
+            return HttpResponseNotFound('Sorry')
+
+        if request.method == 'POST':
+            new_form = ModifyCourseForm(request.POST, instance=Course.objects.get(pk=course), prefix="modificar",)
+
+            if new_form.is_valid():
+                new_form.save()
+
+            extra_context.update({'modify_form': new_form})
+
+    response = courses(request, extra_context)
+    return response
+
 
 
 @login_required
