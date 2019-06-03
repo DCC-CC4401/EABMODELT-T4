@@ -1,0 +1,77 @@
+{% extends 'eabmodel/base.html' %}
+{#{% load static %}#}
+
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+    <!-- !PAGE CONTENT! -->
+    <div class="w3-main" style="margin-left:340px;margin-right:40px">
+
+        <h1 class="w3-xxxlarge w3-text-red" style="margin: 2%;"><b>Ficha de rúbrica</b></h1>
+
+        <!DOCTYPE html>
+
+        <h3>CC4401: Rúbrica para la presentación de Tarea 2</h3>
+
+        <div>
+
+            <head>
+                <style>
+                    table {
+                        font-family: arial, sans-serif;
+                        border-collapse: collapse;
+                        width: 100%;
+                        cursor: pointer;
+                        margin: 20px 0.5% 0.5%;
+                        font-size: 15px;
+                    }
+
+                    td {
+                        border: 1px solid #665f5f;
+                        text-align: left;
+                        width: 20%;
+                        padding: 1%;
+                    }
+
+                    th {
+                        border: 1px solid #665f5f;
+                        text-align: right;
+                        width: 20%;
+                        padding: 1%;
+                    }
+
+                    tr:nth-child(even) {
+                        background-color: #FFA07A;
+                    }
+
+
+                    td:hover {
+                        background-color: #c6bdbb;
+                    }
+
+                </style>
+            </head>
+            <body>
+            <table id="rubric-table">
+                {% if table_data %}
+                    {% for row in table_data %}
+                        <tr>
+                            {% for cell_content in row %}
+                                <td>{{ cell_content }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            </table>
+            </body>
+        </div>
+    </div>
+
+
+    <!-- End page content -->
+{% endblock %}
+
+<!-- W3.CSS Container -->
+<div class="w3-light-grey w3-container w3-padding-32" style="margin-top:75px;padding-right:58px"><p class="w3-right">Powered by <a href="https://www.w3schools.com/w3css/default.asp" title="W3.CSS" target="_blank" class="w3-hover-opacity">w3.css</a></p></div>

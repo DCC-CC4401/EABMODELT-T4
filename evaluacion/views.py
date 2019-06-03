@@ -10,7 +10,8 @@ import json
 
 @login_required
 def index(request):
-    return render(request, 'evaluacion/index.html', context={})
+    evaluations = Evaluation.objects.all()
+    return render(request, 'evaluacion/index.html', {'evaluations': evaluations})
 
 @csrf_exempt
 @login_required

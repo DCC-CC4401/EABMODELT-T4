@@ -51,7 +51,6 @@ class Team(models.Model):
 
 
 class StudentAtTeam(models.Model):
-
     join_date = models.DateTimeField(auto_now_add=True)
     left_date = models.DateTimeField()
     student = models.ForeignKey(Student, on_delete=models.CASCADE)

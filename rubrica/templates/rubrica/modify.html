@@ -1,0 +1,235 @@
+{% extends 'eabmodel/base.html' %}
+{% load static %}
+
+
+{% block head %}
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="{% static "rubrica.css" %}">
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"> </script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+
+    <script type="text/javascript"> var token = '{{ csrf_token }}'; </script>
+    <script type="text/javascript" src = "{% static "rubrica.js" %}"></script>
+
+{% endblock %}
+
+{% block content %}
+    <!-- !PAGE CONTENT! -->
+    <div id="dialog-confirm" title="¿Seguir editando?">
+        <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span></p>
+    </div>
+    <div class="w3-main" style="margin-left:340px;margin-right:40px">
+        <form action="" method="post" id="rubric-form" >
+            {% csrf_token %}
+            <input id="rubric-title" class="w3-xxxlarge w3-text-red rubric-title" onblur="lostFocus()" readonly value={{ title }}>
+            {#        <h1 class="w3-xxxlarge w3-text-red" style="margin: 2%;"><b>Ficha de rúbrica</b></h1>#}
+
+            <!DOCTYPE html>
+            <div class="w3-row w3-container">
+                <div class="w3-col">
+                    <head>
+                        <style>
+                            .button2 {
+                                background-color: #c6bdbb; /* Green */
+                                border: none;
+                                color: black;
+                                padding: 15px 32px;
+                                text-align: center;
+                                text-decoration: none;
+                                display: inline-block;
+                                font-size: 16px;
+                                margin: 0.2px 2px;
+                                cursor: pointer;
+                            }
+
+                            .button2 {width: 50%; border-radius: 12px;}
+                            .button2.button2:hover {background-color: #FFA07A;}
+
+
+                        </style>
+                    </head>
+                    <body>
+                    <button type="button" class="button2 button2" onclick="editTitle()"> Título de la rúbrica <i class="fas fa-edit"></i></button><br>
+                    </body>
+
+
+                    <div class = "w3-col" align="right">
+                        <head>
+
+                            <style>
+                                body {font-family: Arial, Helvetica, sans-serif;}
+
+                                .form-inline label {
+                                    margin: 5px 0 5px 0;
+                                }
+
+                                .form-inline input {
+                                    vertical-align: middle;
+                                    margin: 5px 10px ;
+                                    padding: 5px;
+                                    width: 10%;
+                                    background-color: #fff;
+                                    border: 1px solid #ddd;
+                                }
+
+                                .form-inline button {
+                                    padding: 5px 10px;
+                                    background-color: #c6bdbb;
+                                    border: none;
+                                    color: black;
+                                    cursor: pointer;
+                                    border-radius: 8px;
+                                }
+
+                                .form-inline button:hover {
+                                    background-color: #FFA07A;
+                                }
+
+
+                            </style>
+                        </head>
+                        <body>
+                        <div class="form-inline">
+                            <label>Intervalo de presentación (en minutos)</label> </br>
+                            Min: <input style="width: 60px;" placeholder="Ej: 7" id="presentation_min" value={{ min_presentation_time }}>
+                            Max: <input style="width: 60px;" placeholder="Ej: 10" id="presentation_max" value={{ max_presentation_time }}>
+                            {#                    <button type="submit">Ok</button>#}
+                        </div>
+                        </body>
+                    </div>
+                </div>
+            </div>
+
+            <head>
+                <style>
+                    table {
+                        font-family: arial, sans-serif;
+                        border-collapse: collapse;
+                        width: 100%;
+                        cursor: pointer;
+                        margin: 20px 0.5% 0.5%;
+                        font-size: 15px;
+                    }
+                    textarea {
+                        width: 100%;
+                        top: 0; left: 0; right: 0; bottom: 0;
+                        padding: 5px;
+                        position: absolute;
+                        resize: none;
+                        -webkit-box-sizing: border-box; /* <=iOS4, <= Android  2.3 */
+                        -moz-box-sizing: border-box; /* FF1+ */
+                        box-sizing: border-box; /* Chrome, IE8, Opera, Safari 5.1*/
+                    }
+                    textarea:focus{
+                        outline: none;
+                    }
+                    td, th {
+                        border: 1px solid #665f5f;
+                        text-align: left;
+                        width: 20%;
+                        padding: 2.3%;
+                    }
+                    table, td, th {
+                        position: relative;
+                        border: 1px solid black;
+                    }
+
+                    tr:nth-child(even) {
+                        background-color: #FFA07A;
+                    }
+
+                </style>
+            </head>
+            <body>
+
+            <span id="status"> Status: </span> <span id="status-rubrica">   </span>
+
+            <table id="rubric-table">
+                {% if table_data %}
+                    {% for row in table_data %}
+                        <tr>
+                            {% for cell_content in row %}
+                                {% if cell_content == "aspecto-tag" or cell_content == null %}
+                                    <td> <b> Aspecto\Puntaje </b> </td>
+                                {% else %}
+                                    <td> <textarea>{{ cell_content }}</textarea> </td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            </table>
+
+
+            </body>
+        </form>
+        <div>
+            <head>
+                <style>
+                    .btn-group .button {
+                        background-color: #c6bdbb;
+                        border: none;
+                        color: black;
+                        padding: 15px 4.6%;
+                        text-align: center;
+                        text-decoration: none;
+                        display: inline-block;
+                        font-size: 16px;
+                        cursor: pointer;
+                        float: left;
+                        margin: 18px 2%;
+                    }
+
+                    .btn-group .button { border-radius: 12px;}
+
+                    .btn-group .button:hover { background-color: #FFA07A; }
+
+                </style>
+            </head>
+
+            <body>
+            <br>
+            <div class="btn-group">
+                <button class="button" onclick="addRow();">Agregar fila  <i class="fas fa-plus"></i></button>
+                <button class="button" onclick="addColumn();">Agregar columna <i class="fas fa-plus"></i></button>
+                <button class="button" onclick="deleteRow();">Borrar fila  <i class="fas fa-trash"></i></button>
+                <button class="button" onclick="deleteColumn();">Borrar columna  <i class="fas fa-trash"></i></button>
+            </div>
+            </body>
+        </div>
+
+        <head>
+            <style>
+                .button1 {
+                    background-color: #BF1010;
+                    border: none;
+                    color: white;
+                    padding: 45px;
+                    text-align: center;
+                    text-decoration: none;
+                    display: inline-block;
+                    font-size: 16px;
+                    margin: 10px 78%;
+                    cursor: pointer;
+                }
+
+                .button1 {border-radius: 12px;}
+                .button1.button1:hover {background-color: #FFA07A;}
+            </style>
+        </head>
+        <body>
+        <button type="submit" form="rubric-form" class="button1 button1" id="postbutton">Guardar rúbrica  <i class="far fa-save"></i></button>
+        </body>
+
+
+
+
+
+        <!-- End page content -->
+        {#</>#}
+    </div>
+{% endblock %}
+
+<!-- W3.CSS Container -->
+<div class="w3-light-grey w3-container w3-padding-32" style="margin-top:75px;padding-right:58px"><p class="w3-right">Powered by <a href="https://www.w3schools.com/w3css/default.asp" title="W3.CSS" target="_blank" class="w3-hover-opacity">w3.css</a></p></div>

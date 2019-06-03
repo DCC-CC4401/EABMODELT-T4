@@ -10,16 +10,13 @@ from rubrica.models import Rubric
 class Evaluation(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
+    updated_at = models.DateTimeField(auto_now=True)    
     name = models.CharField(max_length=255)
     date = models.DateTimeField()
     final_date = models.DateTimeField()
     course = models.ForeignKey(Course, on_delete=models.PROTECT)
-
     rubric = models.ForeignKey(Rubric, on_delete=models.PROTECT)
     presentation_time = models.TimeField()
-
     evaluators = models.ManyToManyField(EvaluatorUser)
     is_active = models.BooleanField(default=False)
 
@@ -42,7 +39,6 @@ class TeamEvaluationGrade(models.Model):
 
     submitted_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
     team_evaluation = models.ForeignKey(TeamEvaluation, on_delete=models.CASCADE)
     evaluator = models.ForeignKey(EvaluatorUser, on_delete=models.PROTECT)
     grade_detail = models.TextField()
