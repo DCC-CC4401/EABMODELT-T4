@@ -94,11 +94,6 @@ function addColumn() {
     }
 }
 
-function addColumn2() {
-    var table = document.getElementById("rubric-table");
-
-}
-
 function deleteRow() {
     var table = document.getElementById("rubric-table");
     if (table.rows.length > 1) {
