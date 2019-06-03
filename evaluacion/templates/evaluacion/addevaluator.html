@@ -64,7 +64,7 @@
   <script>document.getElementById("evaluadores").style.display = "none";</script>
     <br>
     </div>
-
+<a href="{% url 'evaluacion:evaluacionAdmin' name=evaluation.name course=evaluation.course.code section=evaluation.course.section semester=evaluation.course.semester|make_list|first year=evaluation.course.year team=teamevaluation.team.id %}" >Empezar evaluación</a>
 
 <!-- End page content -->
 </div>
