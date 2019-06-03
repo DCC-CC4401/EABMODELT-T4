@@ -308,4 +308,69 @@ def getRubrica2(rub):
             rubric.append([i, asp[0], pointsList])
         i += 1
     return rubric
+def teamevaluation_detail_view(request, teameval_id):
+    #obj = TeamEvaluation.objects.get(id=eval_id)
+    obj = get_object_or_404(TeamEvaluation, id=teameval_id)
+    evaluators_list = EvaluatorUser.objects.all() #queryset, list of evaluator users
+    rubrics = Rubric.objects.all() #queryset, list of all rubrics
+    context = {
+      'teamevaluation' : obj,
+      'evaluation' : obj.evaluation,
+      'evaluators' : obj.evaluation.evaluators,
+      'evaluators-list': evaluator_list,
+      'rubrics':rubrics
+    }
+    return render(request, 'evaluacion/addevaluator.html', context)
 
+
+def add_evaluator_view(request, id):
+    obj = get_object_or_404(TeamEvaluation, id=id)
+    evaluators_list = EvaluatorUser.objects.all() #queryset, list of evaluator users
+    rubrics = Rubric.objects.all() #queryset, list of all rubrics
+    form = AddEvaluatorForm(request.POST or None, instance=obj.evaluation)
+    context = {
+      'teamevaluation' : obj,
+      'evaluation' : obj.evaluation,
+      'evaluators' : obj.evaluation.evaluators,
+      'evaluators-list': evaluators_list,
+      'rubrics':rubrics,
+      'form':form
+    }
+    try: 
+      teamevaluationgrades = TeamEvaluationGrade.objects.filter(team_evaluation=obj)
+      context['grades'] = teamevaluationgrades
+    except TeamEvaluationGrade.DoesNotExist:
+      pass
+    if form.is_valid():
+      form.save()
+      if TeamEvaluationGrade.DoesNotExist == False:
+        teamevaluationgrades = TeamEvaluationGrade.objects.filter(team_evaluation=obj)
+        for grade in teamevaluationgrades:
+          obj.evaluation.evaluators.add(grade.evaluator)
+      return redirect('/evaluacion/evalAdmin')
+    return render(request, 'evaluacion/addevaluator.html', context)
+
+
+def edit_rubric(request, id): 
+    instance = get_object_or_404(Evaluation, id=id)
+    form = EditRubricForm(request.POST or None, instance=instance)
+    if form.is_valid():
+        form.save()
+        return redirect('/evaluacion/evalAdmin')
+    context = {
+        'evaluation': instance,
+        'form': form
+      }
+    return render(request, 'evaluacion/editrubric.html', context) 
+
+def edit_dates(request,id):
+    instance = get_object_or_404(Evaluation, id=id)
+    form = EditDatesForm(request.POST or None, instance=instance)
+    if form.is_valid():
+        form.save()
+        return redirect('/evaluacion/evalAdmin')
+    context = {
+        'evaluation': instance,
+        'form': form
+      }
+    return render(request, 'evaluacion/editdates.html', context)
