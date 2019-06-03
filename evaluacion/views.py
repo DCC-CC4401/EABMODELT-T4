@@ -308,6 +308,7 @@ def getRubrica2(rub):
             rubric.append([i, asp[0], pointsList])
         i += 1
     return rubric
+
 def teamevaluation_detail_view(request, teameval_id):
     #obj = TeamEvaluation.objects.get(id=eval_id)
     obj = get_object_or_404(TeamEvaluation, id=teameval_id)
