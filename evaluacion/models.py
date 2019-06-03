@@ -14,6 +14,7 @@ class Evaluation(models.Model):
 
     name = models.CharField(max_length=255)
     date = models.DateTimeField()
+    final_date = models.DateTimeField()
     course = models.ForeignKey(Course, on_delete=models.PROTECT)
 
     rubric = models.ForeignKey(Rubric, on_delete=models.PROTECT)
