@@ -17,21 +17,23 @@
   <!-- Evaluacion -->
   <div class="w3-container" id="designers" style="margin-top:50px">
     <h1 class="w3-xxxlarge w3-text-red"><b>Evaluación </b>
-      {% if teamevaluation.is_active == True %}
+      {% if evaluation.is_active == True %}
       <i class="w3-text-green">en curso</i> </b></h1>
       {% else %}
       <i class="w3-text-orange">cerrada</i> </b></h1>
       {% endif %}
     <hr style="width:50px;border:5px solid red" class="w3-round">
     <div class="w3-container w3-center">
-    <p><b>{{ teamevaluation.team.name|title }}</b> Presentación {{ evaluation.name|title }} <i> {{ evaluation.course.code|upper }} / {{ evaluation.course.semester|title }} / {{ evaluation.course.year }}</i></p>
+    <p><b></b> Presentación {{ evaluation.name|title }} <i> {{ evaluation.course.code|upper }} / {{ evaluation.course.semester|title }} / {{ evaluation.course.year }}</i></p>
     <p><b>Fecha de inicio: <i>{{ evaluation.date|date:"SHORT_DATE_FORMAT" }}</i></p>
       <p><b>Fecha de término: <i>{{ evaluation.final_date|date:"SHORT_DATE_FORMAT" }}</i></p>
     <p><b>Tiempo de presentación: <i>{{ evaluation.presentation_time }}</i></p>
     <p><b> Rúbrica:<i> {{ evaluation.rubric.rubric }}</i></p>
-      {% if teamevaluation.is_active == False or grades.count == 0 %}
+      {% if evaluation.is_active == False%}
+        {% if grades.count == 0 %}
       <!--<button class="w3-button w3-large w3-red w3-round" onclick="window.location.href="{{ evaluation.id }}/editRubric/" >Editar rúbrica</button>-->
         <a href="{% url 'evaluacion:editRubric' id=evaluation.id %}" >Editar rúbrica</a>
+        {% endif %}
       {% endif %}
       <!--<ul id="rubricas">
         {% for rubric in rubrics %}
@@ -46,14 +48,14 @@
         <li class="w3-dark-grey w3-xlarge w3-padding-32">Evaluadores <i class="fas fa-user-tie"></i> </li>
           {% for evaluator in evaluators.all %}
               {% for grade in grades %}
-                {% if evaluator.email == grades.evaluator.email %}
-                  <li class=" w3-padding-16 presentado">{{ evaluator.email }} <i style="margin-left: 10px" class="far fa-check-circle"><i class="w3-small"> ya evaluó</i></i></li>
+                {% if evaluator.email == grade.evaluator.email %}
+                  <li class=" w3-padding-16 presentado">{{ evaluator.first_name }} {{ evaluator.last_name }}<i style="margin-left: 10px" class="far fa-check-circle"><i class="w3-small"> ya evaluó</i></i></li>
                 {% else %}
-                  <li class="w3-padding-16">{{ evaluator.email }} <button style="margin-left: 10px" class="w3-large fas fa-times"></button></li>
+                  <li class="w3-padding-16">{{ evaluator.first_name }} {{ evaluator.last_name }}<button style="margin-left: 10px" class="w3-large fas fa-times"></button></li>
                 {% endif %}
-              {% endfor %}  
+              {% endfor %} 
           {% endfor %}
-        <button onclick="showEvaluators()" class="opcion w3-padding-16" style="width: 100%"> Agregar otro <i style="margin-left: 10px" class="fas fa-user-plus"></i></button>
+        <button onclick="showEvaluators()" class="opcion w3-padding-16" style="width: 100%"> Editar evaluadores <i style="margin-left: 10px" class="fas fa-user-plus"></i></button>
       </ul>
     <form id=evaluadores action='.' method='POST'>{% csrf_token %}
       <table>
@@ -64,7 +66,25 @@
   <script>document.getElementById("evaluadores").style.display = "none";</script>
     <br>
     </div>
-<a href="{% url 'evaluacion:evaluacionAdmin' name=evaluation.name course=evaluation.course.code section=evaluation.course.section semester=evaluation.course.semester|make_list|first year=evaluation.course.year team=teamevaluation.team.id %}" >Empezar evaluación</a>
+
+    <div class="w3-row-padding" style="margin-top:100px">
+                    <div class="w3-half w3-margin-bottom ">
+                        <ul class="w3-ul w3-light-grey w3-center w3-card-4">
+                          <li class="w3-red w3-xlarge w3-padding-32">Equipos pendientes<i style="margin-left: 10px" class="fas fa-user-friends"></i><br> <i class="w3-small">Comience una nueva evaluación...</i></li>
+                          {% for team in left_teams %}
+                            <li class="opcion w3-padding-16">{{ team.0 }} <button style="margin-left: 10px" class="w3-xlarge fas fa-play-circle" onclick="location.href="{% url 'evaluacion:evaluacionAdmin' name=evaluation.name course=evaluation.course.code section=evaluation.course.section semester=evaluation.course.semester|make_list|first year=evaluation.course.year team=team.1 %}" class="w3-button w3-xlarge w3-red w3-margin-bottom" style="margin-left: 17%"></button></li>
+                          {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="w3-half" >
+                        <button class="w3-button w3-xlarge w3-red w3-margin-bottom" style="margin-left: 17%" onclick="location.href='evaluacion.html'"> <i class="fas fa-pen"></i>  Editar evaluación</button>
+
+                    </div>
+                </div>
+
+    <br>
+    <br>
+
 
 <!-- End page content -->
 </div>
@@ -96,6 +116,26 @@
                 y = 0;
             }
         }
+
+        function evaluateGroup(id){
+            dataToSend = {};
+            dataToSend.team = id;
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function(){
+                if (this.readyState == 4){
+                    if(this.status == 200){
+                        window.location.replace("http://localhost:8000/evaluacion/evalAdmin/{{ stage }}/{{ course }}/{{ section }}/{{ semester_code }}/{{ year }}/" + id.toString());
+                    }
+                    else{
+                        alert("Falló la creación de la evaluación. Por favor intente nuevamente.")
+                    }
+                }
+            };
+            xhttp.open('POST', '/evaluacion/postEvalAdmin/{{ stage }}/{{ course }}/{{ section }}/{{ semester_code }}/{{ year }}/{{ team_id }}', true);
+            xhttp.setRequestHeader('Content-Type', 'text/plain; charset="utf-8"');
+            xhttp.send(JSON.stringify(dataToSend));
+        }
+
     </script>
 
 {% endblock content %}

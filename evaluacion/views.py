@@ -343,32 +343,33 @@ def teamevaluation_detail_view(request, teameval_id):
     }
     return render(request, 'evaluacion/addevaluator.html', context)
 
-
 def add_evaluator_view(request, id):
-    obj = get_object_or_404(TeamEvaluation, id=id)
+    evaluation = get_object_or_404(Evaluation, id=id)
+    #obj = TeamEvaluation.objects.filter(evaluation=evaluation)
+    #evaluators_to_exclude = []
+    #if TeamEvaluationGrade.DoesNotExist == False:
+        #teamevaluationgrades = TeamEvaluationGrade.objects.filter(team_evaluation=obj)
+        #evaluators_to_exclude = [ grade.evaluator for grade in teamevaluationgrades ]
+    #qs = obj.evaluation.evaluators.remove(*evaluators_to_exclude)
     evaluators_list = EvaluatorUser.objects.all() #queryset, list of evaluator users
     rubrics = Rubric.objects.all() #queryset, list of all rubrics
-    form = AddEvaluatorForm(request.POST or None, instance=obj.evaluation)
+    form = AddEvaluatorForm(request.POST or None, instance=evaluation)
+    actualCourse = get_object_or_404(Course, code=evaluation.course.code)
+    courseTeams = Team.objects.filter(course=actualCourse, active=True)
+    pendingTeams = getTeams(TeamEvaluation.objects.filter(evaluation=evaluation), courseTeams)
     context = {
-      'teamevaluation' : obj,
-      'evaluation' : obj.evaluation,
-      'evaluators' : obj.evaluation.evaluators,
+      #'teamevaluation': obj,
+      'evaluation' : evaluation,
+      'evaluators' : evaluation.evaluators,
       'evaluators-list': evaluators_list,
+      'left_teams': pendingTeams,
       'rubrics':rubrics,
       'form':form
     }
-    try: 
-      teamevaluationgrades = TeamEvaluationGrade.objects.filter(team_evaluation=obj)
-      context['grades'] = teamevaluationgrades
-    except TeamEvaluationGrade.DoesNotExist:
-      pass
+
     if form.is_valid():
       form.save()
-      if TeamEvaluationGrade.DoesNotExist == False:
-        teamevaluationgrades = TeamEvaluationGrade.objects.filter(team_evaluation=obj)
-        for grade in teamevaluationgrades:
-          obj.evaluation.evaluators.add(grade.evaluator)
-      return redirect('/evaluacion/evalAdmin')
+      return redirect('/evaluacion/'+str(id)+'/addEvaluator/')
     return render(request, 'evaluacion/addevaluator.html', context)
 
 
@@ -377,7 +378,7 @@ def edit_rubric(request, id):
     form = EditRubricForm(request.POST or None, instance=instance)
     if form.is_valid():
         form.save()
-        return redirect('/evaluacion/evalAdmin')
+        return redirect('/evaluacion/'+str(id)+'/addEvaluator/')
     context = {
         'evaluation': instance,
         'form': form
@@ -389,9 +390,9 @@ def edit_dates(request,id):
     form = EditDatesForm(request.POST or None, instance=instance)
     if form.is_valid():
         form.save()
-        return redirect('/evaluacion/evalAdmin')
+        return redirect('/evaluacion/'+str(id)+'/addEvaluator/')
     context = {
         'evaluation': instance,
         'form': form
       }
-    return render(request, 'evaluacion/editdates.html', context)
+    return render(request, 'evaluacion/editdates.html', context) 
