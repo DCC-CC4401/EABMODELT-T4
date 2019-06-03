@@ -36,6 +36,8 @@ def courses(request, extra_context={}):
 
 @login_required
 def add_course(request):
+    extra_context = {}
+
     if not request.user.is_admin:
         return HttpResponseNotFound('Sorry')
 
@@ -44,9 +46,10 @@ def add_course(request):
     else:
         form = CourseForm(request.POST)
         if form.is_valid():
-            form.save()
+            added_course = form.save()
+            extra_context.update({'added_course': added_course, 'added_msg': True})
 
-    extra_context = {'form': form, 'form_msg': True}
+    extra_context.update({'form': form})
     response = courses(request, extra_context)
     return response
 
@@ -90,24 +93,26 @@ def evaluators(request, extra_context={}):
 
 @login_required
 def add_eval(request):
+
     if not request.user.is_admin:
         return HttpResponseNotFound('Sorry')
-
 
     extra_context = {}
     if request.method != 'POST':
         form = EvaluatorUserCreationForm()
     else:
         form = EvaluatorUserCreationForm(request.POST)
+
         if form.is_valid():
             evaluator = form.save(commit=False)
             password = EvaluatorUser.objects.make_random_password()
             evaluator.set_password(password)
             evaluator.save()
 
-            extra_context.update({'password': password})
+            extra_context.update({'password': password, 'added_user': evaluator, "added_msg":True})
+            form = EvaluatorUserCreationForm() # clean the form
 
-    extra_context.update({'form': form, 'form_msg': True})
+    extra_context.update({'form': form})
     response = evaluators(request, extra_context)
     return response
 
