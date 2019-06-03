@@ -22,7 +22,7 @@
     <div class="w3-main" style="margin-left:340px;margin-right:40px">
         <form action="" method="post" id="rubric-form" >
             {% csrf_token %}
-            <input id="rubric-title" class="w3-xxxlarge w3-text-red rubric-title" onblur="lostFocus()" readonly value={{ title }}>
+            <input id="rubric-title" class="w3-xxxlarge w3-text-red rubric-title" onblur="lostFocus()" readonly placeholder="Título" value="{{ title }}">
             {#        <h1 class="w3-xxxlarge w3-text-red" style="margin: 2%;"><b>Ficha de rúbrica</b></h1>#}
 
             <!DOCTYPE html>
@@ -94,7 +94,6 @@
                             <label>Intervalo de presentación (en minutos)</label> </br>
                             Min: <input style="width: 60px;" placeholder="Ej: 7" id="presentation_min" value={{ min_presentation_time }}>
                             Max: <input style="width: 60px;" placeholder="Ej: 10" id="presentation_max" value={{ max_presentation_time }}>
-                            {#                    <button type="submit">Ok</button>#}
                         </div>
                         </body>
                     </div>
@@ -110,9 +109,11 @@
                         cursor: pointer;
                         margin: 20px 0.5% 0.5%;
                         font-size: 15px;
+                        table-layout: fixed ;
                     }
                     textarea {
                         width: 100%;
+                        height: 100%;
                         top: 0; left: 0; right: 0; bottom: 0;
                         padding: 5px;
                         position: absolute;
@@ -129,6 +130,7 @@
                         text-align: left;
                         width: 20%;
                         padding: 2.3%;
+                        height: 100px;
                     }
                     table, td, th {
                         position: relative;
@@ -153,7 +155,7 @@
                                 {% if cell_content == "aspecto-tag" or cell_content == null %}
                                     <td> <b> Aspecto\Puntaje </b> </td>
                                 {% else %}
-                                    <td> <textarea>{{ cell_content }}</textarea> </td>
+                                    <td> <textarea >{{ cell_content }}</textarea> </td>
                                 {% endif %}
                             {% endfor %}
                         </tr>

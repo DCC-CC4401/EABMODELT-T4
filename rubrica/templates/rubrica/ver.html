@@ -13,7 +13,9 @@
 
         <!DOCTYPE html>
 
-        <h3>CC4401: Rúbrica para la presentación de Tarea 2</h3>
+        <h3>{{ title }}</h3>
+        <b>Status:</b> {{ status }} <br>
+        <b>Duración de la presentación:</b> de {{ min_presentation_time }} a {{ max_presentation_time }} minutos
 
         <div>
 
@@ -59,7 +61,11 @@
                     {% for row in table_data %}
                         <tr>
                             {% for cell_content in row %}
-                                <td>{{ cell_content }}</td>
+                                {% if cell_content == "aspecto-tag" or cell_content == null %}
+                                    <td> <b> Aspecto\Puntaje </b> </td>
+                                {% else %}
+                                    <td>{{ cell_content }}</td>
+                                {% endif %}
                             {% endfor %}
                         </tr>
                     {% endfor %}
