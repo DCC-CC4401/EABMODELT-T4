@@ -227,7 +227,6 @@
 
             }
         };
-        console.log(dataToSend.grade_detail);
         xhttp.open('POST', '/evaluacion/evalAdmin/{{ stage }}/{{ course }}/{{ section }}/{{ semester_code }}/{{ year }}/{{ team_id }}', true);
         xhttp.setRequestHeader('Content-Type', 'text/plain; charset="utf-8"');
         xhttp.send(JSON.stringify(dataToSend));
