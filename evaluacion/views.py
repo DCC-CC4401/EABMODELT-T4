@@ -357,7 +357,7 @@ def edit_rubric(request, id):
     form = EditRubricForm(request.POST or None, instance=instance)
     if form.is_valid():
         form.save()
-        return redirect('/evaluacion/evalAdmin')
+        return redirect('/evaluacion/'+str(id)+'/addEvaluator/')
     context = {
         'evaluation': instance,
         'form': form
@@ -369,9 +369,9 @@ def edit_dates(request,id):
     form = EditDatesForm(request.POST or None, instance=instance)
     if form.is_valid():
         form.save()
-        return redirect('/evaluacion/evalAdmin')
+        return redirect('/evaluacion/'+str(id)+'/addEvaluator/')
     context = {
         'evaluation': instance,
         'form': form
       }
-    return render(request, 'evaluacion/editdates.html', context)
+    return render(request, 'evaluacion/editdates.html', context) 
