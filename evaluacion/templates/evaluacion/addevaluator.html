@@ -46,9 +46,8 @@
         <li class="w3-dark-grey w3-xlarge w3-padding-32">Evaluadores <i class="fas fa-user-tie"></i> </li>
           {% for evaluator in evaluators.all %}
               {% for grade in grades %}
-                {% if evaluator == grades.evaluator %}
+                {% if evaluator.email == grades.evaluator.email %}
                   <li class=" w3-padding-16 presentado">{{ evaluator.email }} <i style="margin-left: 10px" class="far fa-check-circle"><i class="w3-small"> ya evaluó</i></i></li>
-                  <li class="w3-padding-16">{{ evaluator.email }} <button style="margin-left: 10px" class="w3-large fas fa-times"></button></li>
                 {% else %}
                   <li class="w3-padding-16">{{ evaluator.email }} <button style="margin-left: 10px" class="w3-large fas fa-times"></button></li>
                 {% endif %}
