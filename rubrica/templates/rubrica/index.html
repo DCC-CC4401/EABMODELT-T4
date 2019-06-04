@@ -14,7 +14,7 @@
     </div>
 
     <div class="w3-container">
-      <button class="w3-button w3-large w3-red w3-right w3-round">Agregar nueva rúbrica</button><br>
+      <a href="{% url 'rubrica:crear' %}" onclick="w3_close()" class="w3-button w3-large w3-red w3-right w3-round">Agregar nueva rúbrica</a><br>
     </div>
     <!--Seccion rubricas-->
 
@@ -34,8 +34,8 @@
                 {% endwith %}
               </p>
               <div>
-                <button class="w3-button w3-large w3-margin-right w3-red w3-left w3-round">Ver</button>
-                <button class="w3-button w3-large w3-red w3-left w3-round">Modificar</button>
+                <button onclick="to_rubric({{ rubric.id }}, 'ver')" class="w3-button w3-large w3-margin-right w3-red w3-left w3-round">Ver</button>
+                <button onclick="to_rubric({{ rubric.id }}, 'modificar')" class="w3-button w3-large w3-red w3-left w3-round">Modificar</button>
                 <button class="w3-button w3-large w3-red w3-right w3-round">Eliminar</button>
               </div>
             </div>
@@ -51,6 +51,9 @@
         } else {
           x.className = x.className.replace(" w3-show", "");
         }
+      }
+      function to_rubric(id, what) {
+        window.location.replace("http://localhost:8000/rubrica/" + id + "/" + what, true)
       }
     </script>
 

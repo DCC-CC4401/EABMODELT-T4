@@ -10,8 +10,9 @@ import json
 
 @login_required
 def index(request):
-    evaluations = Evaluation.objects.all()
+    evaluations = TeamEvaluation.objects.all()
     return render(request, 'evaluacion/index.html', {'evaluations': evaluations})
+
 
 @csrf_exempt
 @login_required
@@ -72,6 +73,7 @@ def openEval(request, name, course, section, semester, year, team):
         context['semester'] = semester_name
         context['semester_code'] = semester
         return render(request, 'evaluacion/evaluacion.html', context=context)
+
 
 @csrf_exempt
 @user_passes_test(lambda u: u.is_superuser)

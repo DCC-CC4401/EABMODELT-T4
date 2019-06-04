@@ -1,30 +1,31 @@
 from django.shortcuts import render, HttpResponse, get_object_or_404
 from django.template.defaultfilters import register
+from ast import literal_eval
 from .models import Rubric
 import json
-
 
 
 def index(request):
     created_rubrics = Rubric.objects.order_by("-updated_at")
     return render(request, 'rubrica/index.html', {'rubrics': created_rubrics})
 
+
 @register.filter(name='split')
 def split(value, arg):
-    return value.split(arg)
+    return value.split(arg)[1:]
 
 
 @register.filter(name='clean')
 def clean(value):
     return value.split("\', ")[0].split("\'")[-1]
 
+
 def seeRubric(request, rubric_id):
     rubric = get_object_or_404(Rubric, pk=rubric_id)
-    data = json.loads(rubric.rubric, encoding='uft-8')
-
+    data = literal_eval(rubric.rubric)
     data = {
         "title": rubric.name,
-        "table_data": data["rubric"],
+        "table_data": data,
     }
     return render(request, 'rubrica/ver.html', context=data)
 
@@ -69,10 +70,10 @@ def modifyRubric(request, rubric_id):
         return HttpResponse(rubric_id)
 
     # load data
-    data = json.loads(rubric.rubric, encoding='uft-8')
+    data = literal_eval(rubric.rubric)
     data = {
         "title": rubric.name,
-        "table_data": data["rubric"],
+        "table_data": data,
         "min_presentation_time": rubric.min_presentation_time/60.0,
         "max_presentation_time": rubric.min_presentation_time/60.0
     }

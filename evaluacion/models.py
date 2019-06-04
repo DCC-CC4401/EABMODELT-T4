@@ -19,6 +19,9 @@ class Evaluation(models.Model):
     evaluators = models.ManyToManyField(EvaluatorUser)
     is_active = models.BooleanField(default=False)
 
+    def get_year(self):
+        return self.date.year
+
     class Meta:
         unique_together = ["name", "date", ]
 

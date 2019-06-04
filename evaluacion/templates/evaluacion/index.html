@@ -19,20 +19,20 @@
     </div>
     <!--Seccion rubricas-->
 
-    {% for evaluation in evaluations %}
+    {% for eval in evaluations %}
         <div>
-          <button onclick="toggle({{ evaluation.id }})" class="w3-btn w3-red w3-block w3-margin" style="width: 75%">
-            <h3>{{ evaluation.name }}</h3>
+          <button onclick="toggle({{ eval.id }})" class="w3-btn w3-red w3-block w3-margin" style="width: 75%">
+            <h3>{{ eval.evaluation.name }}</h3>
           </button>
-            <div id="{{ evaluation.id }}" class="w3-hide w3-container w3-pale-red w3-center w3-padding-large w3-margin" style="width: 75%">
+            <div id="{{ eval.evaluation.id }}" class="w3-hide w3-container w3-pale-red w3-center w3-padding-large w3-margin" style="width: 75%">
               <p>
-                <li>Curso: -{{ evaluation.course.name }}</li>
-                <li>Duración: -{{ evaluation.presentation_time }}</li>
-                <button onclick="rubric({{ evaluation.rubric.id }})" class="w3-button w3-white w3-border w3-border-red w3-round-large">{{ evaluation.rubric.name }}</button>
-                <button class="w3-button w3-white w3-border w3-border-red w3-round-large">Exportar puntajes</button><br>
+                <li>Curso: -{{ eval.evaluation.course.name }}</li>
+                <li>Duración: -{{ eval.evaluation.presentation_time }}</li>
+                <button onclick="rubric({{ eval.evaluation.rubric.id }})" class="w3-button w3-white w3-border w3-border-red w3-round-large">{{ eval.rubric.name }}</button>
+                <button onclick="export_score({{ eval.evaluation.name }}, {{ eval.evaluation.course.name }}, {{ eval.evaluation.course.section }}, {{ eval.evaluation.course.semester }}, {{ eval.evaluation.get_year }}, {{ eval.team }})" class="w3-button w3-white w3-border w3-border-red w3-round-large">Exportar puntajes</button><br>
               </p>
-              <button class="w3-button w3-large w3-margin-right w3-red w3-left w3-round">Ver</button>
-              <button class="w3-button w3-large w3-red w3-left w3-round">Modificar</button>
+              <button onclick="to_eval({{ eval.evaluation.name }}, {{ eval.evaluation.course.name }}, {{ eval.evaluation.course.section }}, {{ eval.evaluation.course.semester }}, {{ eval.evaluation.get_year }}), {{ eval.team }}" class="w3-button w3-large w3-margin-right w3-red w3-left w3-round">Ver</button>
+              <button onclick="to_eval({{ eval.evaluation.name }}, {{ eval.evaluation.course.name }}, {{ eval.evaluation.course.section }}, {{ eval.evaluation.course.semester }}, {{ eval.evaluation.get_year }}),{{ eval.team }} " class="w3-button w3-large w3-red w3-left w3-round">Modificar</button>
               <button class="w3-button w3-large w3-red w3-right w3-round">Eliminar</button>
             </div>
         </div>
@@ -49,7 +49,23 @@
       }
     }
     function rubric(id) {
-      window.open("{% url 'rubrica:index' %}", "_self");
+      windows.location.replace("http://localhost:8000/rubrica/" + id + "/ver", true);
+    }
+    function to_eval(name, course, section, semester, year, team) {
+      windows.location.replace(
+          "http://localhost:8000/evaluacion/evalAdmin/"
+          + name + "/" + course + "/" + section
+          + semester + "/" + year + "/" + team
+          ,true
+      );
+    }
+    function export_score(name, course, section, semester, year, team) {
+        windows.location.replace(
+            "http://localhost:8000/evaluacion/postEvalAdmin/"
+            + name + "/" + course + "/" + section
+            + semester + "/" + year + "/" + team
+            , true
+        );
     }
     </script>
 
