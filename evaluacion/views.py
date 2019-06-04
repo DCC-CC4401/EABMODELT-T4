@@ -1,17 +1,57 @@
-from django.shortcuts import render, HttpResponse, get_object_or_404
+from django.shortcuts import render, HttpResponse, get_object_or_404, redirect
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required, user_passes_test
+
+from evaluacion.forms import EvaluationForm, AddEvaluatorForm, AddEvaluatorForm2
 from evaluacion.models import *
 from eabmodel.models import *
 from users.models import *
-from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseForbidden
+from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseNotFound
 import json
 
 
 @login_required
-def index(request):
+def index(request, extra_context={}):
     evaluations = Evaluation.objects.all()
-    return render(request, 'evaluacion/index.html', {'evaluations': evaluations})
+    context = {'evaluations': evaluations, 'form': EvaluationForm()}
+    context.update(extra_context)
+    return render(request, 'evaluacion/index.html', context)
+
+@login_required
+def view_evaluation(request, id):
+    evaluation = get_object_or_404(Evaluation, id=id)
+    context = {'evaluation': evaluation}
+    return render(request, 'evaluacion/verEval.html', context)
+
+@login_required
+def edit_evaluation(request, id):
+    evaluation = get_object_or_404(Evaluation, id=id)
+    context = {'evaluation': evaluation}
+    return render(request, 'evaluacion/verEval.html', context)
+@login_required
+def add_evaluation(request):
+    extra_context = {}
+
+
+    if not request.user.is_admin:
+        return HttpResponseNotFound('Sorry')
+
+    if request.method != 'POST':
+        form = EvaluationForm(prefix="agregar")
+
+    else:
+        form = EvaluationForm(request.POST, prefix="agregar")
+        if form.is_valid():
+            form.save()
+        else:
+            print(form.errors)
+
+    # form
+    extra_context.update({'form': form})
+    response = index(request, extra_context)
+    return response
+
+
 
 @csrf_exempt
 @login_required
@@ -60,7 +100,7 @@ def openEval(request, name, course, section, semester, year, team):
         except(ValueError, KeyError, TypeError):
             print("Error en Formato de Rúbrica")
             return HttpResponseBadRequest("Error en Formato de Rúbrica")
-        rubrica = getRubrica2(parsedRub)
+        rubrica = getRubrica2(parsedRub["rubric"])
         context = dict()
         context['team'] = equipo.name
         context['stage'] = evalActual.name
@@ -121,11 +161,12 @@ def openEvalAdmin(request, name, course, section, semester, year, team):
                                           + " desea.</div>")
         try:
             parsedRub = json.loads(evalActual.rubric.rubric)
+            print(parsedRub['rubric'])
         except(ValueError, KeyError, TypeError):
             print("Error en Formato de Rúbrica")
             return HttpResponseBadRequest("Error en Formato de Rúbrica")
 
-        rubrica = getRubrica2(parsedRub)
+        rubrica = getRubrica2(parsedRub['rubric'])
         alreadyPresented = []
         presenting_group = []
 
@@ -150,6 +191,7 @@ def openEvalAdmin(request, name, course, section, semester, year, team):
         context['year'] = year
         context['semester'] = semester_name
         context['stage'] = evalActual.name
+        context['evaluation'] = evalActual
         context['rubric'] = rubrica
         context['evaluators'] = [["Jocelyn Simmonds", False], ["Pablo Miranda", True]]
         return render(request, 'evaluacion/evaluacionadmin.html', context=context)
@@ -345,6 +387,9 @@ def teamevaluation_detail_view(request, teameval_id):
 
 def add_evaluator_view(request, id):
     evaluation = get_object_or_404(Evaluation, id=id)
+    print(evaluation)
+    print(evaluation.evaluators.all())
+
     #obj = TeamEvaluation.objects.filter(evaluation=evaluation)
     #evaluators_to_exclude = []
     #if TeamEvaluationGrade.DoesNotExist == False:
@@ -353,24 +398,49 @@ def add_evaluator_view(request, id):
     #qs = obj.evaluation.evaluators.remove(*evaluators_to_exclude)
     evaluators_list = EvaluatorUser.objects.all() #queryset, list of evaluator users
     rubrics = Rubric.objects.all() #queryset, list of all rubrics
-    form = AddEvaluatorForm(request.POST or None, instance=evaluation)
+
+    form = AddEvaluatorForm(request.POST or None)
     actualCourse = get_object_or_404(Course, code=evaluation.course.code)
     courseTeams = Team.objects.filter(course=actualCourse, active=True)
     pendingTeams = getTeams(TeamEvaluation.objects.filter(evaluation=evaluation), courseTeams)
+    if form.is_valid():
+        for i in form.cleaned_data["evaluators"].all():
+            evaluation.evaluators.add(i)
+        evaluation.save()
+
+    else:
+        pass
+
     context = {
       #'teamevaluation': obj,
-      'evaluation' : evaluation,
-      'evaluators' : evaluation.evaluators,
+      'evaluation': evaluation,
+      'evaluators': evaluation.evaluators.all(),
       'evaluators-list': evaluators_list,
       'left_teams': pendingTeams,
-      'rubrics':rubrics,
-      'form':form
+      'rubrics': rubrics,
+      'form': form
     }
-
-    if form.is_valid():
-      form.save()
-      return redirect('/evaluacion/'+str(id)+'/addEvaluator/')
     return render(request, 'evaluacion/addevaluator.html', context)
+
+
+def add_evaluator(request):
+    extra_context = {}
+    response = {'result': 'false'}
+    if not request.user.is_admin:
+        return HttpResponseNotFound('Sorry')
+
+    if request.method != 'POST':
+        form = AddEvaluatorForm2(prefix="agregar")
+
+    else:
+        form = AddEvaluatorForm2(request.POST, prefix="agregar")
+        if form.is_valid():
+            evaluation = Evaluation.objects.get(pk=form.cleaned_data['evaluation_id'])
+            evaluation.evaluators.add(EvaluatorUser.objects.get(pk=form.cleaned_data['evaluator_id']))
+            evaluation.save()
+            response = {'result': 'success'}
+
+    return HttpResponse(json.dumps(response), content_type="application/json")
 
 
 def edit_rubric(request, id): 
