@@ -29,17 +29,10 @@
       <p><b>Fecha de término: <i>{{ evaluation.final_date|date:"SHORT_DATE_FORMAT" }}</i></p>
     <p><b>Tiempo de presentación: <i>{{ evaluation.presentation_time }}</i></p>
     <p><b> Rúbrica:<i> {{ evaluation.rubric.rubric }}</i></p>
-      {% if evaluation.is_active == False%}
-        {% if grades.count == 0 %}
-      <!--<button class="w3-button w3-large w3-red w3-round" onclick="window.location.href="{{ evaluation.id }}/editRubric/" >Editar rúbrica</button>-->
-        <a href="{% url 'evaluacion:editRubric' id=evaluation.id %}" >Editar rúbrica</a>
-        {% endif %}
+      {% if evaluation.is_active == False or grades.count == 0 %}
+        <!--<a href="{% url 'evaluacion:editRubric' id=evaluation.id %}" >Editar rúbrica</a>-->
+        <button class="w3-button w3-xlarge w3-red w3-margin-bottom" style="margin-left: 17%" onclick="location.href='{% url 'evaluacion:editRubric' id=evaluation.id %}'" > <i class='fas fa-pen'></i>  Editar rúbrica</button>
       {% endif %}
-      <!--<ul id="rubricas">
-        {% for rubric in rubrics %}
-              <li class="w3-padding-16"><a href="google.com">rubric.rubric</a></li>
-        {% endfor %}
-        </ul> -->
       
     <br>
 
