@@ -1,8 +1,11 @@
-from django.shortcuts import render, HttpResponse, get_object_or_404
+from django.shortcuts import render, HttpResponse, get_object_or_404, redirect
 from django.template.defaultfilters import register
+from django.urls import reverse
+
 from .models import Rubric
 import json
 
+import ast
 
 
 def index(request):
@@ -17,6 +20,33 @@ def split(value, arg):
 @register.filter(name='clean')
 def clean(value):
     return value.split("\', ")[0].split("\'")[-1]
+
+
+@register.filter(name='aspects')
+def aspects(value):
+
+    # rubric = ast.literal_eval(value)
+
+    # rubric = value["rubric"].parse(":")[-1]
+    # print(rubric)
+    data = json.loads(value)
+    # print(data)
+    aspects = []
+
+    print(type(data["rubric"]))
+    for j, i in enumerate(data["rubric"]):
+        if (j!=0):
+            aspects.append(i[0])
+        # print(type(i))
+    return aspects
+
+
+
+@register.filter(name='time')
+def time(value):
+    return str(int(value/60)) + ":" + str(value%60)
+
+
 
 def seeRubric(request, rubric_id):
     rubric = get_object_or_404(Rubric, pk=rubric_id)
@@ -84,3 +114,9 @@ def modifyRubric(request, rubric_id):
         "max_presentation_time": rubric.max_presentation_time / 60.0
     }
     return render(request, 'rubrica/modify.html', context=data)
+
+
+def rm_rubric(request, rubric_id):
+    ev = get_object_or_404(Rubric, id=rubric_id)
+    ev.delete()
+    return redirect(reverse("rubrica:index"))

@@ -1,4 +1,5 @@
 from django.shortcuts import render, HttpResponse, get_object_or_404, redirect
+from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required, user_passes_test
 
@@ -12,8 +13,14 @@ import json
 
 @login_required
 def index(request, extra_context={}):
-    evaluations = Evaluation.objects.all()
-    context = {'evaluations': evaluations, 'form': EvaluationForm()}
+
+    if(request.user.is_admin):
+        # pass
+        evaluations = Evaluation.objects.all()
+    else:
+        evaluations = Evaluation.objects.all().filter(evaluators=request.user)
+
+    context = {'evaluations': evaluations, 'form': EvaluationForm(prefix="agregar")}
     context.update(extra_context)
     return render(request, 'evaluacion/index.html', context)
 
@@ -28,6 +35,13 @@ def edit_evaluation(request, id):
     evaluation = get_object_or_404(Evaluation, id=id)
     context = {'evaluation': evaluation}
     return render(request, 'evaluacion/verEval.html', context)
+
+def rm_evaluation(reques, id):
+    ev = get_object_or_404(Evaluation, id=id)
+    ev.delete()
+    return redirect(reverse("evaluacion:index"))
+
+
 @login_required
 def add_evaluation(request):
     extra_context = {}
@@ -54,7 +68,6 @@ def add_evaluation(request):
 
 
 @csrf_exempt
-@login_required
 def openEval(request, name, course, section, semester, year, team):
 
     semester_name = getSemester(semester)
@@ -115,7 +128,6 @@ def openEval(request, name, course, section, semester, year, team):
         return render(request, 'evaluacion/evaluacion.html', context=context)
 
 @csrf_exempt
-@user_passes_test(lambda u: u.is_admin)
 def openEvalAdmin(request, name, course, section, semester, year, team):
 
     semester_name = getSemester(semester)
@@ -218,7 +230,7 @@ def postEval(request, name, course, section, semester, year, team):
     teamEvaluation = get_object_or_404(TeamEvaluation, team=teamEvaluated, evaluation=evaluation)
     evaluator = get_object_or_404(EvaluatorUser, id=1)
     gradeByEval = get_object_or_404(TeamEvaluationGrade, team_evaluation=teamEvaluation, evaluator=evaluator)
-    parsedRub = getRubrica2(json.loads(evaluation.rubric.rubric))
+    parsedRub = getRubrica2(json.loads(evaluation.rubric.rubric)["rubric"])
     accomplishment = getAccomplishment(json.loads(gradeByEval.grade_detail), parsedRub)
     return render(request, 'evaluacion/postevaluacion.html', context={"scores": accomplishment,
                                                                       "stage": name,
@@ -250,7 +262,7 @@ def postEvalAdmin(request, name, course, section, semester, year, team):
         teamEvaluation = get_object_or_404(TeamEvaluation, team=teamEvaluated, evaluation=evaluation)
         evaluator = get_object_or_404(EvaluatorUser, id=1)
         gradeByEval = get_object_or_404(TeamEvaluationGrade, team_evaluation=teamEvaluation, evaluator=evaluator)
-        parsedRub = getRubrica2(json.loads(evaluation.rubric.rubric))
+        parsedRub = getRubrica2(json.loads(evaluation.rubric.rubric)["rubric"])
         detail = json.loads(gradeByEval.grade_detail)
         accomplishment = getAccomplishment(detail, parsedRub)
         courseTeams = Team.objects.filter(course=actualCourse, active=True)
@@ -318,10 +330,10 @@ def getTeams(evaltms, alltms):
     for item in evaltms:
         evalteams.append(item.team)
     for team in alltms:
-        if team in evalteams:
-            pass
-        else:
-            leftteams.append([team.name, team.id])
+        # if team in evalteams:
+            # pass
+        # else:
+        leftteams.append([team.name, team.id])
     return leftteams
 
 
@@ -412,15 +424,41 @@ def add_evaluator_view(request, id):
         pass
 
     context = {
-      #'teamevaluation': obj,
-      'evaluation': evaluation,
-      'evaluators': evaluation.evaluators.all(),
-      'evaluators-list': evaluators_list,
-      'left_teams': pendingTeams,
-      'rubrics': rubrics,
-      'form': form
+        'evaluation': evaluation,
+        'evaluators': evaluation.evaluators.all(),
+        'all_evaluator': EvaluatorUser.objects.all(),
+        'evaluators-list': evaluators_list,
+        'left_teams': pendingTeams,
+        'rubrics': rubrics,
+        'form': form,
+        'editar_form': EvaluationForm(instance=evaluation),
     }
     return render(request, 'evaluacion/addevaluator.html', context)
+
+@csrf_exempt
+def open_evaluation(request, id):
+    if request.method == "POST":
+        json_string = request.body.decode('utf-8')
+        data = json.loads(json_string, encoding='utf-8')
+        if data['func'] == "openEval":
+            eval = get_object_or_404(Evaluation, id=data['id'])
+            eval.is_active = True
+            eval.save()
+        return HttpResponse(True)
+
+    else:
+        evaluation = get_object_or_404(Evaluation, id=id)
+        team = get_object_or_404(Team, id=data['team'])
+        TeamEvaluation.objects.create(team=team,
+                                      evaluation=evaluation,
+                                      duration=0,
+                                      is_active=True)
+        return JsonResponse(data)
+
+def rm_evaluator(request, eva_id, ev_id):
+    evaluation = get_object_or_404(Evaluation, id=eva_id)
+    evaluation.evaluators.remove(EvaluatorUser.objects.get(pk=ev_id))
+    return redirect('/evaluacion/' + str(eva_id) + '/addEvaluator/')
 
 
 def add_evaluator(request):
@@ -441,6 +479,9 @@ def add_evaluator(request):
             response = {'result': 'success'}
 
     return HttpResponse(json.dumps(response), content_type="application/json")
+
+
+
 
 
 def edit_rubric(request, id): 
@@ -466,3 +507,5 @@ def edit_dates(request,id):
         'form': form
       }
     return render(request, 'evaluacion/editdates.html', context) 
+
+

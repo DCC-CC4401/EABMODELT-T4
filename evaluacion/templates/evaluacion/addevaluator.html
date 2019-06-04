@@ -14,6 +14,8 @@
 <div class="w3-main" style="margin-left:340px;margin-right:40px">
   <!-- Photo grid (modal) -->
 
+
+
   <!-- Evaluacion -->
   <div class="w3-container" id="designers" style="margin-top:50px">
     <h1 class="w3-xxxlarge w3-text-red"><b>Evaluación
@@ -48,18 +50,16 @@
 
       
     <br>
+  {% if user.is_admin %}
 
    <div class="w3-panel  w3-margin-bottom">
       <ul class="w3-ul w3-light-grey w3-center w3-card-4">
         <li class="w3-dark-grey w3-xlarge w3-padding-32">Evaluadores <i class="fas fa-user-tie"></i> </li>
           {% for evaluator in evaluators %}
-{#              {% for grade in grades %}#}
-{#                {% if evaluator.email == grade.evaluator.email %}#}
-{#                  <li class=" w3-padding-16 presentado">{{ evaluator.first_name }} {{ evaluator.last_name }}<i style="margin-left: 10px" class="far fa-check-circle"><i class="w3-small"> ya evaluó</i></i></li>#}
-{#                {% else %}#}
-                  <li class="w3-padding-16">{{ evaluator.first_name }} {{ evaluator.last_name }}<button style="margin-left: 10px" class="w3-large fas fa-times"></button></li>
-{#                {% endif %}#}
-{#              {% endfor %} #}
+                  <li class="w3-padding-16">{{ evaluator.first_name }} {{ evaluator.last_name }}
+                    <a href="{% url 'evaluacion:rm_evaluator'  evaluation.id evaluator.id %}" ><button style="margin-left: 10px" class="w3-large fas fa-times"></button></a>
+                  </li>
+
           {% endfor %}
         <button onclick="showEvaluators()" class="opcion w3-padding-16" style="width: 100%"> Editar evaluadores <i style="margin-left: 10px" class="fas fa-user-plus"></i></button>
       </ul>
@@ -67,7 +67,11 @@
      <form id=evaluadores action='.' method='POST'>
        {% csrf_token %}
       <table>
-        {{ form.as_table }}
+        <tr><th><label for="id_evaluators">Evaluators:</label></th><td><select name="evaluators" id="id_evaluators" multiple="">
+            {% for i in all_evaluator %}
+              <option value="{{ i.id }}">{{ i.first_name }}  {{ i.last_name }} ( {{ i.email }})</option>
+            {% endfor %}
+        </select></td></tr>
       </table>
     <input type='submit' value='Save' />
   </form>
@@ -77,21 +81,39 @@
      <br>
     </div>
 
+    {% endif %}
+
+    {% if evaluation.is_active %}
     <div class="w3-row-padding" style="margin-top:100px">
       <div class="w3-half w3-margin-bottom ">
           <ul class="w3-ul w3-light-grey w3-center w3-card-4">
             <li class="w3-red w3-xlarge w3-padding-32">Equipos pendientes<i style="margin-left: 10px" class="fas fa-user-friends"></i><br> <i class="w3-small">Comience una nueva evaluación...</i></li>
             {% for team in left_teams %}
-              <li class="opcion w3-padding-16">{{ team.0 }} 
-                <a href="{% url 'evaluacion:evaluacionAdmin' name=evaluation.name course=evaluation.course.code section=evaluation.course.section semester=evaluation.course.semester|make_list|first year=evaluation.course.year team=team.1 %}">
-
-                <button style="margin-left: 10px" class="w3-xlarge fas fa-play-circle" class="w3-button w3-xlarge w3-red w3-margin-bottom" style="margin-left: 17%"> </button></a></li>
+              <li class="opcion w3-padding-16">{{ team.0 }}
+{#                <a href="{% url 'evaluacion:evaluacionAdmin' name=evaluation.name course=evaluation.course.code section=evaluation.course.section semester=evaluation.course.semester|make_list|first year=evaluation.course.year team=team.1 %}">#}
+                {% if user.is_admin %}
+                <button style="margin-left: 10px" class="w3-xlarge fas fa-play-circle" class="w3-button w3-xlarge w3-red w3-margin-bottom" style="margin-left: 17%" onclick="evaluateGroup({{ team.1}})"> </button></li>
+              {% else %}
+                  <button style="margin-left: 10px" class="w3-xlarge fas fa-play-circle" class="w3-button w3-xlarge w3-red w3-margin-bottom" style="margin-left: 17%" onclick="evaluateGroupNoAdmin({{ team.1}})"> </button></li>
+              {% endif %}
             {% endfor %}
           </ul>
       </div>
-      <div class="w3-half" >
-          <button class="w3-button w3-xlarge w3-red w3-margin-bottom" style="margin-left: 17%" onclick="location.href='evaluacion.html'"> <i class="fas fa-pen"></i>  Editar evaluación</button>
+    {% else %}
+        <div class="w3-container w3-left" style="width: 100%">
+        {% if user.is_admin %}
+            <p class="w3-text-red"><b>La evaluación no está abierta, ¿Desea abrirla?</b></p>
+            <button class="w3-button w3-xlarge w3-blue" style="margin-left: 5%; float: left" onclick="openEval({{ evaluation.id }})">Abrir evaluación</button>
+          {% else %}
+            <p class="w3-text-red"><b>La evaluación no está abierta</b></p>
+          {% endif %}
+        </div>
+    {% endif %}
 
+  {%  if user.is_admin %}
+      <div class="w3-container" style="width: 100%" >
+          <button class="w3-button w3-xlarge w3-red w3-margin-bottom" style="margin-left: 17%; float: right" <i class="fas fa-pen"></i>  Editar evaluación</button>
+  {% endif %}
       </div>
   </div>
 
@@ -99,11 +121,20 @@
     <br>
 
 
+
 <!-- End page content -->
 </div>
 
-<!-- W3.CSS Container -->
-<div class="w3-light-grey w3-container w3-padding-32" style="margin-top:75px;padding-right:58px"></div>
+
+
+
+
+
+
+
+
+
+
 
 </body>
 
@@ -130,21 +161,58 @@
             }
         }
 
+
         function evaluateGroup(id){
             dataToSend = {};
+            dataToSend.func = "evaluateGroup";
             dataToSend.team = id;
+            var xhttp = new XMLHttpRequest();
+
+            var sem = "{{ evaluation.course.semester }}"[0];
+
+            {#xhttp.onreadystatechange = function(){#}
+            {#    if (this.readyState == 4){#}
+            {#        if(this.status == 200){#}
+            window.location.replace("http://localhost:8000/evaluacion/evalAdmin/{{ evaluation.name }}/{{ evaluation.course.code}}/{{ evaluation.course.section }}/"+ sem +"/{{ evaluation.course.year }}/" + id.toString());
+            {#        }#}
+            {#        else{#}
+            {#            alert("Falló la creación de la evaluación. Por favor intente nuevamente.")#}
+            {#        }#}
+            {#    }#}
+            {# ; #}
+            {#xhttp.open('POST', "http://localhost:8000/evaluacion/evalAdmin/{{ evaluation.name }}/{{ evaluation.course.code}}/{{ evaluation.course.section }}/"+ sem +"/{{ evaluation.course.year }}/" + id.toString(), true);#}
+            {#xhttp.setRequestHeader('Content-Type', 'text/plain; charset="utf-8"');#}
+            {#xhttp.send(JSON.stringify(dataToSend));#}
+        }
+
+        function evaluateGroupNoAdmin(id){
+            dataToSend = {};
+            dataToSend.func = "evaluateGroup";
+            dataToSend.team = id;
+            var xhttp = new XMLHttpRequest();
+
+            var sem = "{{ evaluation.course.semester }}"[0];
+            window.location.replace("http://localhost:8000/evaluacion/eval/{{ evaluation.name }}/{{ evaluation.course.code}}/{{ evaluation.course.section }}/"+ sem +"/{{ evaluation.course.year }}/" + id.toString());
+        }
+
+
+
+        function openEval(id){
+            dataToSend = {};
+            dataToSend.func = "openEval";
+            dataToSend.id = id;
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function(){
                 if (this.readyState == 4){
                     if(this.status == 200){
-                        window.location.replace("http://localhost:8000/evaluacion/evalAdmin/{{ stage }}/{{ course }}/{{ section }}/{{ semester_code }}/{{ year }}/" + id.toString());
+                        location.reload();
                     }
                     else{
-                        alert("Falló la creación de la evaluación. Por favor intente nuevamente.")
+                        alert("Falló la apertura de la evaluación. Por favor intente nuevamente.")
                     }
                 }
             };
-            xhttp.open('POST', '/evaluacion/postEvalAdmin/{{ stage }}/{{ course }}/{{ section }}/{{ semester_code }}/{{ year }}/{{ team_id }}', true);
+            xhttp.open('POST', '/evaluacion/{{ evaluation.id }}/open/', true);
             xhttp.setRequestHeader('Content-Type', 'text/plain; charset="utf-8"');
             xhttp.send(JSON.stringify(dataToSend));
         }

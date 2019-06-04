@@ -13,30 +13,51 @@
       <hr style="width:50px;border:5px solid red" class="w3-round">
     </div>
 
+    {% if user.is_admin %}
     <div class="w3-container">
       <a href="{% url 'rubrica:crear' %}" <button class="w3-button w3-large w3-red w3-right w3-round">Agregar nueva rúbrica</button></a><br>
     </div>
+    {% endif %}
     <!--Seccion rubricas-->
+
+
 
     {% for rubric in rubrics %}
         <div>
           <button onclick="toggle({{ rubric.id }})" class="w3-btn w3-red w3-block w3-margin" style="width: 75%">
             <h3>{{ rubric.name }}</h3>
           </button>
-            <div id="{{ rubric.id }}" class="w3-hide w3-container w3-pale-red w3-center w3-padding-large w3-margin" style="width: 75%">
-              <p>
-                {% with rubric.rubric|split:"]," as aspects %}
-                  {% for aspect in aspects %}
-                    {% with aspect|clean as aspect_cleaned %}
-                    <li>{{ aspect_cleaned }}</li>
-                    {% endwith %}
-                  {% endfor %}
-                {% endwith %}
-              </p>
-              <div>
-                <button class="w3-button w3-large w3-margin-right w3-red w3-left w3-round">Ver</button>
-                <button class="w3-button w3-large w3-red w3-left w3-round">Modificar</button>
-                <button class="w3-button w3-large w3-red w3-right w3-round">Eliminar</button>
+
+            <div id="{{ rubric.id }}" class="w3-hide w3-container w3-pale-red w3-padding-large w3-margin" style="width: 75%">
+              <div style="margin-left: 50px">
+
+              {% if rubric.completed %}
+                <li style="color: green">Rúbrica Válida
+              {% else %}
+              <li style="color: red"> Rúbrica Incompleta
+               </li>
+              {% endif %}
+
+              <li> Creada el {{ rubric.created_at }} </li>
+              <li> Última actualización {{ rubric.updated_at }}</li>
+              <li>Tiempo Sugerido de Presentación: de {{ rubric.min_presentation_time|time}} a {{ rubric.max_presentation_time|time}} minutos</li>
+              <li>Niveles de Cumplimiento: {{ rubric.n_compliance_lvl }}</li>
+              <li>Aspectos: {{ rubric.n_evaluated_aspect }} </li>
+                  {%  with rubric.rubric|aspects  as aspects %}
+                    <ul style="margin-top: 5px;">
+                    {%  for aspect in aspects %}
+                        <li> {{ aspect }} </li>
+                    {% endfor %}
+                    </ul>
+                  {% endwith %}
+              </div>
+            <br>
+            <br>
+              <div style="margin-left: 30px">
+
+                <button class="w3-button w3-large w3-margin-right w3-red w3-left w3-round" onclick="location.href='{{ rubric.id }}/ver'">Ver</button>
+                <button class="w3-button w3-large w3-red w3-left w3-round" onclick="location.href='{{ rubric.id}}/modificar'"> Modificar </button>
+                <a href="{% url 'rubrica:remover' rubric.id %}" ><button class="w3-button w3-large w3-red w3-right w3-round">Eliminar</button></a>
               </div>
             </div>
         </div>

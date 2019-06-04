@@ -18,9 +18,11 @@
         <hr style="width:50px;border:5px solid red" class="w3-round">
       </div>
 
+    {% if user.is_admin %}
     <div class="w3-container">
       <button onclick="$('#agregar').show()" class="w3-button w3-large w3-red w3-right w3-round">Agregar nueva evaluación</button><br>
     </div>
+    {% endif %}
     <!--Seccion evaluaciones-->
 
     {% for evaluation in evaluations %}
@@ -35,9 +37,9 @@
                 <li>Fecha Inicio: {{ evaluation.date }}</li>
                 <li>Fecha Fin: {{ evaluation.final_date }}</li>
                 {% if  evaluation.is_active  %}
-                  <li class="w3-font-green" > Evaluación Activa </li>
+                  <li style="color:green" > Evaluación Activa </li>
                 {% else %}
-                  <li class="w3-font-red" > Evaluación Cerrada </li>
+                  <li style="color:red" > Evaluación Cerrada </li>
                 {% endif %}
 
 {#                <li>Evaluadores: {{ evaluation.evaluators }}</li>#}
@@ -46,9 +48,13 @@
                 <a href="{% url 'rubrica:ver' evaluation.rubric.id %}"> <button class="w3-button w3-white w3-border w3-border-red w3-round-large"> Ver Rúbrica: {{ evaluation.rubric.name }}</button></a>
                 <button class="w3-button w3-white w3-border w3-border-red w3-round-large">Exportar puntajes</button><br>
               </p>
-              <a href="{% url "evaluacion:view" id=evaluation.id %}"><button class="w3-button w3-large w3-margin-right w3-red w3-left w3-round" >Ver</button></a>
-              <a href="{% url "evaluacion:edit" id=evaluation.id %}"><button class="w3-button w3-large w3-red w3-left w3-round">Modificar</button></a>
-              <a href="{% url "evaluacion:edit" id=evaluation.id %}"><button class="w3-button w3-large w3-red w3-right w3-round">Eliminar</button></a>
+
+
+              <a href="{% url "evaluacion:addevaluator" id=evaluation.id %}"><button class="w3-button w3-large w3-margin-right w3-red w3-left w3-round" >Ver</button></a>
+              {% if user.is_admin %}
+                <a href="{% url "evaluacion:addevaluator" id=evaluation.id %}"><button class="w3-button w3-large w3-red w3-left w3-round">Modificar</button></a>
+              <a href="{% url "evaluacion:remove" id=evaluation.id %}"><button class="w3-button w3-large w3-red w3-right w3-round">Eliminar</button></a>
+              {% endif %}
             </div>
         </div>
     {% endfor %}
@@ -93,17 +99,12 @@
 
 
                 </div>
-                <input class="w3-button w3-block w3-red w3-section w3-padding"  type='submit' name='next' value="Añadir Curso +" />
+                <input class="w3-button w3-block w3-red w3-section w3-padding"  type='submit' name='next' value="Añadir Evaluación +" />
               </form>
           </div>
         </div>
       </div><!-- cierra de agregar -->
     {% endif %}
-
-
-
-
-
     <script>
     function toggle(name) {
       let x = document.getElementById(name);

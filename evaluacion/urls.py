@@ -9,6 +9,7 @@ urlpatterns = [
     path('add', views.add_evaluation, name='add'),
     path('edit/<int:id>', views.edit_evaluation, name='edit'),
     path('view/<int:id>', views.view_evaluation, name='view'),
+    path('rm/<int:id>', views.rm_evaluation, name='remove'),
     path('eval/<str:name>/<str:course>/<str:section>/<str:semester>/<str:year>/<str:team>', views.openEval, name='evaluacion'),
     path('evalAdmin/<str:name>/<str:course>/<str:section>/<str:semester>/<str:year>/<str:team>', views.openEvalAdmin, name='evaluacionAdmin'),
     path('evalAdmin/<int:id>', views.openEvalAdmin2, name='evaluacionAdmin'),
@@ -18,4 +19,7 @@ urlpatterns = [
     path('<int:id>/editRubric/', views.edit_rubric, name='editRubric'),
     path('<int:id>/editDates/', views.edit_dates, name='editDates'),
     path('add_evaluator/', views.add_evaluator, name='add_evaluator'),
+    path('rm/<int:eva_id>/<int:ev_id>', views.rm_evaluator, name='rm_evaluator'),
+    path('<int:id>/open/', views.open_evaluation, name='open_eval'),
+
 ]
