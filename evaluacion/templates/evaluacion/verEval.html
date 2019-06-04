@@ -24,7 +24,7 @@
     
     <div class="w3-panel  w3-margin-bottom">
       <ul class="w3-ul w3-light-grey w3-center w3-card-4">
-        <li id='evaluadores' class="w3-dark-grey w3-xlarge w3-padding-32">Evaluadores <i class="fas fa-user-tie"></i> </li>
+        <li class="w3-dark-grey w3-xlarge w3-padding-32">Evaluadores <i class="fas fa-user-tie"></i> </li>
           {% for eval in evaluators %}
               {% if eval.1 == False %}
                 <li class="w3-padding-16">{{ eval.0 }} <button style="margin-left: 10px" class="w3-large fas fa-times"></button></li>
@@ -95,7 +95,7 @@
 </div>
 
 <!-- W3.CSS Container -->
-<div class="w3-light-grey w3-container w3-padding-32" style="margin-top:75px;padding-right:58px"><p class="w3-right">Powered by <a href="https://www.w3schools.com/w3css/default.asp" title="W3.CSS" target="_blank" class="w3-hover-opacity">w3.css</a></p></div>
+<div class="w3-light-grey w3-container w3-padding-32" style="margin-top:75px;padding-right:58px"><p class="w3-right"></div>
 
 </body>
 
@@ -231,36 +231,6 @@
         xhttp.setRequestHeader('Content-Type', 'text/plain; charset="utf-8"');
         xhttp.send(JSON.stringify(dataToSend));
     }
-
-
-    function rmEvaluator(evaluator, evaluation) {
-      var xhttp = new XMLHttpRequest();
-      xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-          document.getElementById("demo").innerHTML =
-          this.responseText;
-        }
-      };
-      xhttp.open("GET", "ajax_info.txt", true);
-      xhttp.send();
-    }
-
-    function addEvaluator(evaluator, evaluation) {
-      var xhttp = new XMLHttpRequest();
-      xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-          moveEvaluator(evaluator);
-        }
-      };
-      dataToSend2 = {};
-      dataToSend2.evaluation_id = evaluation;
-      dataToSend2.evaluator_id = evaluator;
-
-      xhttp.open("POST", "{%  url 'evaluacion:add_evaluator'%}", true);
-      xhttp.send(JSON.stringify(dataToSend2));
-    }
-
-
     </script>
 
 {% endblock content %}

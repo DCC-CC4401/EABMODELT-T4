@@ -1,0 +1,154 @@
+{% extends "eabmodel/base.html" %}
+
+{% block subtitle %}Añadir evaluador{% endblock %}
+
+{% block content %}
+
+<body>
+<link rel="stylesheet" type="text/css" href="./evaluacion.css">
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+<!-- !PAGE CONTENT! -->
+<div class="w3-main" style="margin-left:340px;margin-right:40px">
+  <!-- Photo grid (modal) -->
+
+  <!-- Evaluacion -->
+  <div class="w3-container" id="designers" style="margin-top:50px">
+    <h1 class="w3-xxxlarge w3-text-red"><b>Evaluación
+      {% if evaluation.is_active == True %}
+      <i class="w3-text-green">en curso</i> </b></h1>
+      {% else %}
+      <i class="w3-text-orange">cerrada</i> </b></h1>
+      {% endif %}
+    <hr style="width:50px;border:5px solid red" class="w3-round">
+    <div class="w3-container ">
+
+    <ul>
+    <li><b>Presentación:  </b>{{ evaluation.name|title }} <i> {{ evaluation.course.code|upper }} / {{ evaluation.course.semester|title }} / {{ evaluation.course.year }}</i></li>
+    <li><b>Fecha de inicio:</b> <i>{{ evaluation.date|date:"SHORT_DATE_FORMAT" }}</i></li>
+    <li><b>Fecha de término:</b> <i>{{ evaluation.final_date|date:"SHORT_DATE_FORMAT" }}</i></li>
+    <li><b>Tiempo de presentación:</b> <i>{{ evaluation.presentation_time }}</i></li>
+    <li><b>Rúbrica:</b><i>{{ evaluation.rubric.name }}</i></li>
+
+      {% if evaluation.is_active == False%}
+        {% if grades.count == 0 %}
+      <!--<button class="w3-button w3-large w3-red w3-round" onclick="window.location.href="{{ evaluation.id }}/editRubric/" >Editar rúbrica</button>-->
+        <a href="{% url 'evaluacion:editRubric' id=evaluation.id %}" >Editar rúbrica</a>
+        {% endif %}
+      {% endif %}
+
+    </ul>
+      <!--<ul id="rubricas">
+{#        {% for rubric in rubrics %}#}
+              <li class="w3-padding-16"><a href="google.com">rubric.rubric</a></li>
+{#        {% endfor %}#}
+        </ul> -->
+
+      
+    <br>
+
+   <div class="w3-panel  w3-margin-bottom">
+      <ul class="w3-ul w3-light-grey w3-center w3-card-4">
+        <li class="w3-dark-grey w3-xlarge w3-padding-32">Evaluadores <i class="fas fa-user-tie"></i> </li>
+          {% for evaluator in evaluators %}
+{#              {% for grade in grades %}#}
+{#                {% if evaluator.email == grade.evaluator.email %}#}
+{#                  <li class=" w3-padding-16 presentado">{{ evaluator.first_name }} {{ evaluator.last_name }}<i style="margin-left: 10px" class="far fa-check-circle"><i class="w3-small"> ya evaluó</i></i></li>#}
+{#                {% else %}#}
+                  <li class="w3-padding-16">{{ evaluator.first_name }} {{ evaluator.last_name }}<button style="margin-left: 10px" class="w3-large fas fa-times"></button></li>
+{#                {% endif %}#}
+{#              {% endfor %} #}
+          {% endfor %}
+        <button onclick="showEvaluators()" class="opcion w3-padding-16" style="width: 100%"> Editar evaluadores <i style="margin-left: 10px" class="fas fa-user-plus"></i></button>
+      </ul>
+
+     <form id=evaluadores action='.' method='POST'>
+       {% csrf_token %}
+      <table>
+        {{ form.as_table }}
+      </table>
+    <input type='submit' value='Save' />
+  </form>
+
+     <script>document.getElementById("evaluadores").style.display = "none";</script>
+
+     <br>
+    </div>
+
+    <div class="w3-row-padding" style="margin-top:100px">
+      <div class="w3-half w3-margin-bottom ">
+          <ul class="w3-ul w3-light-grey w3-center w3-card-4">
+            <li class="w3-red w3-xlarge w3-padding-32">Equipos pendientes<i style="margin-left: 10px" class="fas fa-user-friends"></i><br> <i class="w3-small">Comience una nueva evaluación...</i></li>
+            {% for team in left_teams %}
+              <li class="opcion w3-padding-16">{{ team.0 }} 
+                <a href="{% url 'evaluacion:evaluacionAdmin' name=evaluation.name course=evaluation.course.code section=evaluation.course.section semester=evaluation.course.semester|make_list|first year=evaluation.course.year team=team.1 %}">
+
+                <button style="margin-left: 10px" class="w3-xlarge fas fa-play-circle" class="w3-button w3-xlarge w3-red w3-margin-bottom" style="margin-left: 17%"> </button></a></li>
+            {% endfor %}
+          </ul>
+      </div>
+      <div class="w3-half" >
+          <button class="w3-button w3-xlarge w3-red w3-margin-bottom" style="margin-left: 17%" onclick="location.href='evaluacion.html'"> <i class="fas fa-pen"></i>  Editar evaluación</button>
+
+      </div>
+  </div>
+
+    <br>
+    <br>
+
+
+<!-- End page content -->
+</div>
+
+<!-- W3.CSS Container -->
+<div class="w3-light-grey w3-container w3-padding-32" style="margin-top:75px;padding-right:58px"></div>
+
+</body>
+
+    <script>
+        var x = 0;
+        function showEvaluators(){
+            if(x == 0){
+                document.getElementById("evaluadores").style.display="block";
+                x = 1;
+            }else{
+                document.getElementById("evaluadores").style.display="none";
+                x = 0;
+            }
+        }
+
+        var y = 0;
+        function editRubric(){
+            if(x == 0){
+                document.getElementById("rubricas").style.display="none";
+                y = 1;
+            }else{
+                document.getElementById("rubricas").style.display="block";
+                y = 0;
+            }
+        }
+
+        function evaluateGroup(id){
+            dataToSend = {};
+            dataToSend.team = id;
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function(){
+                if (this.readyState == 4){
+                    if(this.status == 200){
+                        window.location.replace("http://localhost:8000/evaluacion/evalAdmin/{{ stage }}/{{ course }}/{{ section }}/{{ semester_code }}/{{ year }}/" + id.toString());
+                    }
+                    else{
+                        alert("Falló la creación de la evaluación. Por favor intente nuevamente.")
+                    }
+                }
+            };
+            xhttp.open('POST', '/evaluacion/postEvalAdmin/{{ stage }}/{{ course }}/{{ section }}/{{ semester_code }}/{{ year }}/{{ team_id }}', true);
+            xhttp.setRequestHeader('Content-Type', 'text/plain; charset="utf-8"');
+            xhttp.send(JSON.stringify(dataToSend));
+        }
+
+    </script>
+
+{% endblock content %}

@@ -1,6 +1,10 @@
 {% extends 'eabmodel/base.html' %}
+{% load widget_tweaks %}
 
 {% block head %}
+
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+
 {% endblock %}
 
 {% block content %}
@@ -15,29 +19,90 @@
       </div>
 
     <div class="w3-container">
-      <button class="w3-button w3-large w3-red w3-right w3-round">Agregar nueva evaluación</button><br>
+      <button onclick="$('#agregar').show()" class="w3-button w3-large w3-red w3-right w3-round">Agregar nueva evaluación</button><br>
     </div>
-    <!--Seccion rubricas-->
+    <!--Seccion evaluaciones-->
 
     {% for evaluation in evaluations %}
         <div>
           <button onclick="toggle({{ evaluation.id }})" class="w3-btn w3-red w3-block w3-margin" style="width: 75%">
             <h3>{{ evaluation.name }}</h3>
           </button>
-            <div id="{{ evaluation.id }}" class="w3-hide w3-container w3-pale-red w3-center w3-padding-large w3-margin" style="width: 75%">
-              <p>
-                <li>Curso: -{{ evaluation.course.name }}</li>
-                <li>Duración: -{{ evaluation.presentation_time }}</li>
-                <button onclick="rubric({{ evaluation.rubric.id }})" class="w3-button w3-white w3-border w3-border-red w3-round-large">{{ evaluation.rubric.name }}</button>
+            <div id="{{ evaluation.id }}" class="w3-hide w3-container w3-pale-red w3-padding-large w3-margin" style="width: 75%">
+              <div style="margin-left: 40px!important;">
+                <li>Curso:  ({{ evaluation.course.code }} - {{ evaluation.course.section }} ) {{ evaluation.course.name }}</li><li> {{ evaluation.course.semester }} {{ evaluation.course.year }}</li>
+                <li>Duración: {{ evaluation.presentation_time }}</li>
+                <li>Fecha Inicio: {{ evaluation.date }}</li>
+                <li>Fecha Fin: {{ evaluation.final_date }}</li>
+                {% if  evaluation.is_active  %}
+                  <li class="w3-font-green" > Evaluación Activa </li>
+                {% else %}
+                  <li class="w3-font-red" > Evaluación Cerrada </li>
+                {% endif %}
+
+{#                <li>Evaluadores: {{ evaluation.evaluators }}</li>#}
+
+                <br>
+                <a href="{% url 'rubrica:ver' evaluation.rubric.id %}"> <button class="w3-button w3-white w3-border w3-border-red w3-round-large"> Ver Rúbrica: {{ evaluation.rubric.name }}</button></a>
                 <button class="w3-button w3-white w3-border w3-border-red w3-round-large">Exportar puntajes</button><br>
               </p>
-              <button class="w3-button w3-large w3-margin-right w3-red w3-left w3-round">Ver</button>
-              <button class="w3-button w3-large w3-red w3-left w3-round">Modificar</button>
-              <button class="w3-button w3-large w3-red w3-right w3-round">Eliminar</button>
+              <a href="{% url "evaluacion:view" id=evaluation.id %}"><button class="w3-button w3-large w3-margin-right w3-red w3-left w3-round" >Ver</button></a>
+              <a href="{% url "evaluacion:edit" id=evaluation.id %}"><button class="w3-button w3-large w3-red w3-left w3-round">Modificar</button></a>
+              <a href="{% url "evaluacion:edit" id=evaluation.id %}"><button class="w3-button w3-large w3-red w3-right w3-round">Eliminar</button></a>
             </div>
         </div>
     {% endfor %}
     </div>
+
+
+    {% if user.is_admin %}
+      <div id="agregar" class="w3-modal" {% if form.errors %} style="display:block !important" {% endif %}>
+        <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:600px">
+          <div class="w3-center">
+            <br>
+            <span onclick="document.getElementById('agregar').style.display='none'" class="w3-button w3-xlarge w3-transparent w3-display-topright" title="Close Modal">×</span>
+              <form class="w3-container" action="{% url 'evaluacion:add' %}" method='post'>
+                {% csrf_token %}
+
+                <div class="w3-section">
+                  {{ form.non_field_errors }}
+
+                  {{ form.name.errors }}
+                  <label for="{{ form.name.id_for_label }}"><b>Nombre Curso:</b></label>
+                  {% render_field form.name class+="w3-input w3-border w3-margin-bottom" placeholder=form.name.label %}
+
+                  {{ form.date.errors }}
+                  <label for="{{ form.date.id_for_label }}"><b>Fecha Inicio:</b></label>
+                  {% render_field form.date type="date" class+="w3-input w3-border w3-margin-bottom" placeholder=form.date.label %}
+
+                  {{ form.final_date.errors }}
+                  <label for="{{ form.final_date.id_for_label }}"><b> Fecha Fin: </b></label>
+                    {% render_field form.final_date type="date" class+="w3-input w3-border w3-margin-bottom" placeholder=form.final_date.label %}
+
+                  {{ form.course.errors }}
+                  <label for="{{ form.course.id_for_label }}"><b>Curso</b></label>
+                    {% render_field form.course class+="w3-input w3-border w3-margin-bottom"%}
+
+                  {{ form.rubric.errors }}
+                  <label for="{{ form.rubric.id_for_label }}"><b>Rúbrica</b></label>
+                    {% render_field form.rubric class+="w3-input w3-border w3-margin-bottom"  %}
+
+                  {{ form.presentation_time.errors }}
+                  <label for="{{ form.presentation_time.id_for_label }}"><b>Tiempo de Presentación</b></label>
+                    {% render_field form.presentation_time class+="w3-input w3-border w3-margin-bottom"  %}
+
+
+                </div>
+                <input class="w3-button w3-block w3-red w3-section w3-padding"  type='submit' name='next' value="Añadir Curso +" />
+              </form>
+          </div>
+        </div>
+      </div><!-- cierra de agregar -->
+    {% endif %}
+
+
+
+
 
     <script>
     function toggle(name) {
@@ -47,9 +112,6 @@
       } else {
           x.className = x.className.replace(" w3-show", "");
       }
-    }
-    function rubric(id) {
-      window.open("{% url 'rubrica:index' %}", "_self");
     }
     </script>
 
